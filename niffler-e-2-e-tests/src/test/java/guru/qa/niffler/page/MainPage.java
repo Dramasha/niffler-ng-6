@@ -16,7 +16,8 @@ public class MainPage {
             spendingsText = $("#spendings"),
             personIcon = $("[data-testid='PersonIcon']"),
             personMenu = $("[role='menu']"),
-            imageInput = $(".image__input-label");
+            imageInput = $(".image__input-label"),
+            peopleTabs = $("[aria-label='People tabs']");
 
     public EditSpendingPage editSpending(String spendingDescription) {
         tableRows.find(text(spendingDescription)).$$("td").get(5).click();
@@ -39,6 +40,14 @@ public class MainPage {
         imageInput.shouldBe(visible);
 
         return new ProfilePage();
+    }
+
+    public FriendsPage goToFriendsUser(){
+        personIcon.click();
+        personMenu.shouldBe(visible).$(byText("Friends")).click();
+        peopleTabs.shouldHave(text("Friends"));
+
+        return new FriendsPage();
     }
 
     public LoginPage clickToSignOut() {
