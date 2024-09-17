@@ -24,7 +24,7 @@ public class RegisterPage {
         return new RegisterPage();
     }
 
-    public LoginPage checkSuccessfulCreateUser() {
+    public LoginPage checkSuccessfulCreateUserAndReturnToLogin() {
         registeredSuccessful.shouldHave(text("Congratulations! You've registered!"));
         signInButton.click();
 

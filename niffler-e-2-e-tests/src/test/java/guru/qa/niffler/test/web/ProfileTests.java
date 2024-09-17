@@ -25,9 +25,9 @@ public class ProfileTests {
             open(CFG.frontUrl(), LoginPage.class)
                     .login("Dramasha", "123");
             mainPage.checkSuccessfulLogin();
-            mainPage.clickToProfileUser()
+            mainPage.goToProfile()
                     .clickArchiveCategory(categoryJson.name())
-                    .clickCloseOrArchiveOrUnarchiveCategory("Archive")
+                    .clickArchiveOrUnarchiveCategory("Archive")
                     .checkNotCategoryByNameInProfile(categoryJson.name());
     }
 
@@ -42,10 +42,10 @@ public class ProfileTests {
         open(CFG.frontUrl(), LoginPage.class)
                 .login("Dramasha", "123");
         mainPage.checkSuccessfulLogin();
-        mainPage.clickToProfileUser()
+        mainPage.goToProfile()
                 .clickOnCheckboxShowArchived()
                 .clickUnarchiveCategory(categoryJson.name())
-                .clickCloseOrArchiveOrUnarchiveCategory("Unarchive")
+                .clickArchiveOrUnarchiveCategory("Unarchive")
                 .clickOnCheckboxShowArchived()
                 .checkCategoryByNameInProfile(categoryJson.name());
     }
