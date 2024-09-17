@@ -1,5 +1,6 @@
 package guru.qa.niffler.page;
 
+import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 
 import static com.codeborne.selenide.Condition.*;
@@ -8,6 +9,9 @@ import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
 public class ProfilePage {
+    private static final ElementsCollection
+    searchCategory = $$("[class='MuiBox-root css-1lekzkb']");
+
     private final SelenideElement
             imageUpload = $(".image__input-label"),
             saveChangesButton = $(":r1:"),
@@ -16,6 +20,7 @@ public class ProfilePage {
             inputCategory = $("#category"),
             alertSuccessUpdate = $("[role='alert']"),
             closeAlert = $("[data-testid='CloseIcon']"),
+            categoryNames = $("[aria-label='Edit category']"),
             closeOrArchiveCategoryOrUnarchive = $(".MuiDialogActions-spacing");
 
     public ProfilePage setName(String name) {
@@ -51,41 +56,31 @@ public class ProfilePage {
         closeAlert.click();
     }
 
-    public ProfilePage clickCloseOrArchiveOrUnarchiveCategory(String closeOrArchiveOrUnarchive) {
-        closeOrArchiveCategoryOrUnarchive.$(byText(closeOrArchiveOrUnarchive)).click();
+    public ProfilePage clickArchiveOrUnarchiveCategory(String archiveOrUnarchive) {
+        closeOrArchiveCategoryOrUnarchive.$(byText(archiveOrUnarchive)).click();
 
         return new ProfilePage();
     }
 
-    public ProfilePage checkCategoryByNameInProfile(String nameCategory) {
-        $(".MuiGrid-root.MuiGrid-container.MuiGrid-spacing-xs-2.css-3w20vr")
+    public void checkCategoryByNameInProfile(String nameCategory) {
+        categoryNames.parent().parent()
                 .shouldHave(text(nameCategory));
-
-        return new ProfilePage();
     }
 
-    public ProfilePage checkNotCategoryByNameInProfile(String nameCategory) {
-        $(".MuiGrid-root.MuiGrid-container.MuiGrid-spacing-xs-2.css-3w20vr")
+    public void checkNotCategoryByNameInProfile(String nameCategory) {
+        categoryNames.parent().parent()
                 .shouldNotHave(text(nameCategory));
-
-        return new ProfilePage();
     }
 
     public ProfilePage clickArchiveCategory(String name) {
-        $$("[class='MuiBox-root css-1lekzkb']")
-                .filter(text(name))
-                .first()
-                .$("button[aria-label='Archive category']")
+        searchCategory.filter(text(name)).first().$("button[aria-label='Archive category']")
                 .click();
 
         return new ProfilePage();
     }
 
     public ProfilePage clickUnarchiveCategory(String name) {
-        $$("[class='MuiBox-root css-1lekzkb']")
-                .filter(text(name))
-                .first()
-                .$("[data-testid='UnarchiveOutlinedIcon']")
+        searchCategory.filter(text(name)).first().$("[data-testid='UnarchiveOutlinedIcon']")
                 .click();
 
         return new ProfilePage();

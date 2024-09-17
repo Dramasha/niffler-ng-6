@@ -14,10 +14,10 @@ public class CategoryExtension implements BeforeEachCallback, AfterTestExecution
 
     @Override
     public void beforeEach(ExtensionContext context) {
-        String nameCategory = faker.country().name();
-
-        AnnotationSupport.findAnnotation(context.getRequiredTestMethod(), Category.class)
+               AnnotationSupport.findAnnotation(context.getRequiredTestMethod(), Category.class)
                 .ifPresent(anno -> {
+                    String nameCategory = anno.title().isEmpty() ? faker.country().name() : anno.title();
+
                     CategoryJson categoryJson = new CategoryJson(
                             null,
                             nameCategory,
@@ -41,7 +41,7 @@ public class CategoryExtension implements BeforeEachCallback, AfterTestExecution
     @Override
     public void afterTestExecution(ExtensionContext context){
         CategoryJson categoryJson = context.getStore(NAMESPACE).get(context.getUniqueId(), CategoryJson.class);
-        if(categoryJson.archived()) {
+
             CategoryJson archivedCategoryJson = new CategoryJson(
                     categoryJson.id(),
                     categoryJson.name(),
@@ -49,7 +49,6 @@ public class CategoryExtension implements BeforeEachCallback, AfterTestExecution
                     true
             );
             spendApiClient.updateCategory(archivedCategoryJson);
-        }
     }
 
     @Override

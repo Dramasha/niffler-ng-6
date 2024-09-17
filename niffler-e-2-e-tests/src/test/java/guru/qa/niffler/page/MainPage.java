@@ -33,7 +33,7 @@ public class MainPage {
         spendingsText.shouldBe(visible).shouldHave(text("History of Spendings"));
     }
 
-    public ProfilePage clickToProfileUser(){
+    public ProfilePage goToProfile() {
         personIcon.click();
         personMenu.shouldBe(visible).$(byText("Profile")).click();
         imageInput.shouldBe(visible);
