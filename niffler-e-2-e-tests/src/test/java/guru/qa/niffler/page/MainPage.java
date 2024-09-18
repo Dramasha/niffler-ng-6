@@ -28,7 +28,7 @@ public class MainPage {
         tableRows.find(text(spendingDescription)).should(visible);
     }
 
-    public void checkSuccessfulLogin() {
+    public void checkIsLoaded() {
         statisticText.shouldBe(visible).shouldHave(text("Statistics"));
         spendingsText.shouldBe(visible).shouldHave(text("History of Spendings"));
     }

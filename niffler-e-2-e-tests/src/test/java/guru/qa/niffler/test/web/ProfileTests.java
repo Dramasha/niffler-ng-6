@@ -24,7 +24,7 @@ public class ProfileTests {
     void activeCategoryShouldPresentInCategoriesList(CategoryJson categoryJson) {
             open(CFG.frontUrl(), LoginPage.class)
                     .login("Dramasha", "123");
-            mainPage.checkSuccessfulLogin();
+            mainPage.checkIsLoaded();
             mainPage.goToProfile()
                     .clickArchiveCategory(categoryJson.name())
                     .clickArchiveOrUnarchiveCategory("Archive")
@@ -41,7 +41,7 @@ public class ProfileTests {
     void archiveCategoryShouldPresentInCategoriesList(CategoryJson categoryJson) {
         open(CFG.frontUrl(), LoginPage.class)
                 .login("Dramasha", "123");
-        mainPage.checkSuccessfulLogin();
+        mainPage.checkIsLoaded();
         mainPage.goToProfile()
                 .clickOnCheckboxShowArchived()
                 .clickUnarchiveCategory(categoryJson.name())
