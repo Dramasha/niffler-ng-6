@@ -27,9 +27,9 @@ public class RegisterWebTests {
         open(CFG.frontUrl(), LoginPage.class)
                 .clickToRegisterPage()
                 .registeredUser(userName, password)
-                .checkSuccessfulCreateUser()
+                .checkSuccessfulCreateUserAndReturnToLogin()
                 .login(userName, password);
-        mainPage.checkSuccessfulLogin();
+        mainPage.checkIsLoaded();
     }
 
     @Test
@@ -37,7 +37,7 @@ public class RegisterWebTests {
         open(CFG.frontUrl(), LoginPage.class)
                 .clickToRegisterPage()
                 .registeredUser(userName, password)
-                .checkSuccessfulCreateUser()
+                .checkSuccessfulCreateUserAndReturnToLogin()
                 .clickToRegisterPage()
                 .registeredUser(userName, password)
                 .checkUnsuccessfulCreateUser(userName);
