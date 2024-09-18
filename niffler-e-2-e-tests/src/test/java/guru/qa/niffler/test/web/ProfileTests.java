@@ -1,6 +1,7 @@
 package guru.qa.niffler.test.web;
 
 import guru.qa.niffler.config.Config;
+import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.extension.BrowserExtension;
 import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.model.CategoryJson;
@@ -16,27 +17,29 @@ public class ProfileTests {
     private static final Config CFG = Config.getInstance();
     private static final MainPage mainPage = new MainPage();
 
-    @Category(
+    @User(
             username = "Dramasha",
-            archived = false
+            categories = @Category(
+                    archived = false
+            )
     )
     @Test
     void activeCategoryShouldPresentInCategoriesList(CategoryJson categoryJson) {
-            open(CFG.frontUrl(), LoginPage.class)
-                    .login("Dramasha", "123");
-            mainPage.checkIsLoaded();
-            mainPage.goToProfile()
-                    .clickArchiveCategory(categoryJson.name())
-                    .clickArchiveOrUnarchiveCategory("Archive")
-                    .checkNotCategoryByNameInProfile(categoryJson.name());
+        open(CFG.frontUrl(), LoginPage.class)
+                .login("Dramasha", "123");
+        mainPage.checkIsLoaded();
+        mainPage.goToProfile()
+                .clickArchiveCategory(categoryJson.name())
+                .clickArchiveOrUnarchiveCategory("Archive")
+                .checkNotCategoryByNameInProfile(categoryJson.name());
     }
 
-
-    @Category(
+    @User(
             username = "Dramasha",
-            archived = true
+            categories = @Category(
+                    archived = true
+            )
     )
-
     @Test
     void archiveCategoryShouldPresentInCategoriesList(CategoryJson categoryJson) {
         open(CFG.frontUrl(), LoginPage.class)
