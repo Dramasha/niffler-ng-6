@@ -15,7 +15,7 @@ public class LoginWebTests {
 
     @Test
     void checkCreateUser() {
-        open(CFG.frontUrl(), LoginPage.class)
+        open(CFG.frontDockerUrl(), LoginPage.class)
                 .login(username, invalidPassword);
         loginPage.checkErrorBadCredentials();
     }

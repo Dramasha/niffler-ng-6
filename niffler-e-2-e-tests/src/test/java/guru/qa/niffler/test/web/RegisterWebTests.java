@@ -23,7 +23,7 @@ public class RegisterWebTests {
 
     @Test
     void checkCreateUser() {
-        open(CFG.frontUrl(), LoginPage.class)
+        open(CFG.frontDockerUrl(), LoginPage.class)
                 .clickToRegisterPage()
                 .registeredUser(userName, password)
                 .checkSuccessfulCreateUserAndReturnToLogin()
@@ -33,7 +33,7 @@ public class RegisterWebTests {
 
     @Test
     void checkNotCreateUserWithSimilarUsername() {
-        open(CFG.frontUrl(), LoginPage.class)
+        open(CFG.frontDockerUrl(), LoginPage.class)
                 .clickToRegisterPage()
                 .registeredUser(userName, password)
                 .checkSuccessfulCreateUserAndReturnToLogin()
@@ -52,7 +52,7 @@ public class RegisterWebTests {
     @ParameterizedTest
     @MethodSource("passwordData")
     void checkNotCreateUserWithWeakOrLongPassword(String password) {
-        open(CFG.frontUrl(), LoginPage.class)
+        open(CFG.frontDockerUrl(), LoginPage.class)
                 .clickToRegisterPage()
                 .registeredUser(userName, password)
                 .checkLengthPasswordError();

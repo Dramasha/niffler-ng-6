@@ -22,7 +22,7 @@ public class FriendsTests {
     @ExtendWith(UsersQueueExtension.class)
     @Test
     void checkEmptyUser(@UserType(empty) StaticUser user) {
-        open(CFG.frontUrl(), LoginPage.class)
+        open(CFG.frontDockerUrl(), LoginPage.class)
                 .login(user.username(), user.password());
         mainPage.goToFriendsUser()
                 .checkWhatUserDontHaveFriends();
@@ -31,7 +31,7 @@ public class FriendsTests {
     @ExtendWith(UsersQueueExtension.class)
     @Test
     void checkUserWithFriends(@UserType(withFriends) StaticUser user) {
-        open(CFG.frontUrl(), LoginPage.class)
+        open(CFG.frontDockerUrl(), LoginPage.class)
         .login(user.username(), user.password());
         mainPage.goToFriendsUser()
                 .checkWhatUserHaveFriends();
@@ -40,7 +40,7 @@ public class FriendsTests {
     @ExtendWith(UsersQueueExtension.class)
     @Test
     void checkUserWithIncomeRequestFriend(@UserType(withIncomeFriendRequest) StaticUser user) {
-        open(CFG.frontUrl(), LoginPage.class)
+        open(CFG.frontDockerUrl(), LoginPage.class)
                 .login(user.username(), user.password());
         mainPage.goToFriendsUser()
                 .checkWhatUserHaveIncomeRequestForFriendship();
@@ -49,7 +49,7 @@ public class FriendsTests {
     @ExtendWith(UsersQueueExtension.class)
     @Test
     void checkUserWithOutcomeRequestFriend(@UserType(withOutcomeFriendRequest) StaticUser user) {
-        open(CFG.frontUrl(), LoginPage.class)
+        open(CFG.frontDockerUrl(), LoginPage.class)
                 .login(user.username(), user.password());
         mainPage.goToFriendsUser()
                 .clickToAllPeople()

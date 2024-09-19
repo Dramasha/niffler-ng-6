@@ -25,7 +25,7 @@ public class ProfileTests {
     )
     @Test
     void activeCategoryShouldPresentInCategoriesList(CategoryJson categoryJson) {
-        open(CFG.frontUrl(), LoginPage.class)
+        open(CFG.frontDockerUrl(), LoginPage.class)
                 .login("Dramasha", "123");
         mainPage.checkIsLoaded();
         mainPage.goToProfile()
@@ -42,7 +42,7 @@ public class ProfileTests {
     )
     @Test
     void archiveCategoryShouldPresentInCategoriesList(CategoryJson categoryJson) {
-        open(CFG.frontUrl(), LoginPage.class)
+        open(CFG.frontDockerUrl(), LoginPage.class)
                 .login("Dramasha", "123");
         mainPage.checkIsLoaded();
         mainPage.goToProfile()

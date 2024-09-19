@@ -27,7 +27,7 @@ public class SpendingWebTest {
     void categoryDescriptionShouldBeChangedFromTable(SpendJson spend) {
         String newDescription = "ловушка Докера";
 
-        open(CFG.frontUrl(), LoginPage.class)
+        open(CFG.frontDockerUrl(), LoginPage.class)
                 .login("Dramasha", "123");
         mainPage.editSpending(spend.description())
                 .setNewSpendingDescription(newDescription)
