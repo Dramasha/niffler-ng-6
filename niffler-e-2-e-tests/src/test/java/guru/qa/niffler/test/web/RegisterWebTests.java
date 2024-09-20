@@ -15,8 +15,8 @@ import static guru.qa.niffler.utils.RandomDataUtils.*;
 import static org.junit.jupiter.params.provider.Arguments.of;
 
 public class RegisterWebTests {
-    private static final Config CFG = Config.getInstance();
-    private static final MainPage mainPage = new MainPage();
+    private final Config CFG = Config.getInstance();
+    private final MainPage mainPage = new MainPage();
 
     private final String userName = getRandomUsername();
     private final String password = getRandomPassword(3, 11);

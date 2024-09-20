@@ -14,8 +14,8 @@ import static com.codeborne.selenide.Selenide.open;
 
 @ExtendWith(BrowserExtension.class)
 public class ProfileTests {
-    private static final Config CFG = Config.getInstance();
-    private static final MainPage mainPage = new MainPage();
+    private final Config CFG = Config.getInstance();
+    private final MainPage mainPage = new MainPage();
 
     @User(
             username = "Dramasha",

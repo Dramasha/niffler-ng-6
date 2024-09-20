@@ -12,8 +12,8 @@ import static com.codeborne.selenide.Selenide.*;
 
 public class SpendingWebTest {
 
-    private static final Config CFG = Config.getInstance();
-    private static final MainPage mainPage = new MainPage();
+    private final Config CFG = Config.getInstance();
+    private final MainPage mainPage = new MainPage();
 
     @User(
             username = "Dramasha",
@@ -23,6 +23,7 @@ public class SpendingWebTest {
                     amount = 79990
             )
     )
+
     @Test
     void categoryDescriptionShouldBeChangedFromTable(SpendJson spend) {
         String newDescription = "ловушка Докера";

@@ -3,7 +3,8 @@ package guru.qa.niffler.page;
 import com.codeborne.selenide.SelenideElement;
 
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThan;
-import static com.codeborne.selenide.Condition.*;
+import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 
@@ -23,12 +24,24 @@ public class FriendsPage {
         friendTable.shouldHave(text("There are no users yet"));
     }
 
-    public void checkWhatUserHaveFriends() {
+    public FriendsPage checkWhatUserHaveFriends() {
         friendsArea.findAll("tr").shouldHave(sizeGreaterThan(0));
+
+        return new FriendsPage();
     }
 
-    public void checkWhatUserHaveIncomeRequestForFriendship() {
+    public void checkWhatUserHaveSpecificFriends(String usernameFriend) {
+        friendsArea.shouldHave(text(usernameFriend));
+    }
+
+    public FriendsPage checkWhatUserHaveIncomeRequestForFriendship() {
         request.shouldHave(text("Accept"));
+
+        return new FriendsPage();
+    }
+
+    public void checkWhatUserHaveIncomeRequestForFriendshipFromSpecificUser(String username) {
+        request.shouldHave(text(username));
     }
 
     public FriendsPage clickToAllPeople() {
@@ -36,8 +49,14 @@ public class FriendsPage {
         return new FriendsPage();
     }
 
-    public void checkWhatUserHaveRequestForFriendship() {
+    public FriendsPage checkWhatUserHaveRequestForFriendship() {
         allArea.findAll("tr").find(text("Waiting...")).shouldBe(visible);
+
+        return new FriendsPage();
+    }
+
+    public void checkWhatUserHaveRequestForFriendshipToSpecificUser(String username) {
+        allArea.findAll("tr").filter(text(username)).first().shouldHave(text("Waiting..."));
     }
 
 }
