@@ -16,13 +16,13 @@ import static guru.qa.niffler.jupiter.extension.UsersQueueExtension.UserType.Typ
 @ExtendWith(BrowserExtension.class)
 public class FriendsTests {
 
-    private static final Config CFG = Config.getInstance();
-    private static final MainPage mainPage = new MainPage();
+    private final Config CFG = Config.getInstance();
+    private final MainPage mainPage = new MainPage();
 
     @ExtendWith(UsersQueueExtension.class)
     @Test
     void checkEmptyUser(@UserType(empty) StaticUser user) {
-        open(CFG.frontUrl(), LoginPage.class)
+        open(CFG.frontDockerUrl(), LoginPage.class)
                 .login(user.username(), user.password());
         mainPage.goToFriendsUser()
                 .checkWhatUserDontHaveFriends();
@@ -31,28 +31,31 @@ public class FriendsTests {
     @ExtendWith(UsersQueueExtension.class)
     @Test
     void checkUserWithFriends(@UserType(withFriends) StaticUser user) {
-        open(CFG.frontUrl(), LoginPage.class)
+        open(CFG.frontDockerUrl(), LoginPage.class)
         .login(user.username(), user.password());
         mainPage.goToFriendsUser()
-                .checkWhatUserHaveFriends();
+                .checkWhatUserHaveFriends()
+                .checkWhatUserHaveSpecificFriends(user.friends());
     }
 
     @ExtendWith(UsersQueueExtension.class)
     @Test
     void checkUserWithIncomeRequestFriend(@UserType(withIncomeFriendRequest) StaticUser user) {
-        open(CFG.frontUrl(), LoginPage.class)
+        open(CFG.frontDockerUrl(), LoginPage.class)
                 .login(user.username(), user.password());
         mainPage.goToFriendsUser()
-                .checkWhatUserHaveIncomeRequestForFriendship();
+                .checkWhatUserHaveIncomeRequestForFriendship().
+                checkWhatUserHaveIncomeRequestForFriendshipFromSpecificUser(user.income());
     }
 
     @ExtendWith(UsersQueueExtension.class)
     @Test
     void checkUserWithOutcomeRequestFriend(@UserType(withOutcomeFriendRequest) StaticUser user) {
-        open(CFG.frontUrl(), LoginPage.class)
+        open(CFG.frontDockerUrl(), LoginPage.class)
                 .login(user.username(), user.password());
         mainPage.goToFriendsUser()
                 .clickToAllPeople()
-                .checkWhatUserHaveRequestForFriendship();
+                .checkWhatUserHaveRequestForFriendship()
+                .checkWhatUserHaveRequestForFriendshipToSpecificUser(user.outcome());
     }
 }

@@ -31,10 +31,33 @@ public class UsersQueueExtension implements
     private static final Queue<StaticUser> withOutcomeFriendUsers = new ConcurrentLinkedQueue<>();
 
     static {
-        emptyUsers.add(new StaticUser("testEmptyUser", "testPassword", null, null, null));
-        withFriendsUsers.add(new StaticUser("testUserWithFriends", "testPassword", "testForTest", null, null));
-        withIncomeFriendUsers.add(new StaticUser("testUserWithIncomeFriend", "testPassword", null, "testUserWithOutcomeFriend", null));
-        withOutcomeFriendUsers.add(new StaticUser("testUserWithOutcomeFriend", "testPassword", "testOutcome", null, "testUserWithIncomeFriend"));
+        emptyUsers.add(new StaticUser(
+                "testEmptyUser",
+                "testPassword",
+                null,
+                null,
+                null
+        ));
+        withFriendsUsers.add(new StaticUser(
+                "testUserWithFriends",
+                "testPassword",
+                "Dramasha",
+                null,
+                null
+        ));
+        withIncomeFriendUsers.add(new StaticUser(
+                "testUserWithIncomeFriend",
+                "testPassword",
+                null,
+                "testUserWithOutcomeFriend",
+                null));
+        withOutcomeFriendUsers.add(new StaticUser(
+                "testUserWithOutcomeFriend",
+                "testPassword",
+                "testOutcome",
+                null,
+                "testUserWithIncomeFriend"
+        ));
     }
 
     @Target(ElementType.PARAMETER)
@@ -43,7 +66,10 @@ public class UsersQueueExtension implements
         Type value() default Type.empty;
 
         enum Type {
-            empty, withFriends, withIncomeFriendRequest, withOutcomeFriendRequest
+            empty,
+            withFriends,
+            withIncomeFriendRequest,
+            withOutcomeFriendRequest
         }
     }
 
@@ -59,7 +85,7 @@ public class UsersQueueExtension implements
 
 
     @Override
-    public void beforeEach(ExtensionContext context) throws Exception {
+    public void beforeEach(ExtensionContext context) {
         Arrays.stream(context.getRequiredTestMethod().getParameters())
                 .filter(p -> AnnotationSupport.isAnnotated(p, UserType.class))
                 .forEach(p -> {
@@ -75,11 +101,7 @@ public class UsersQueueExtension implements
                             );
                             user.ifPresentOrElse(
                                     u -> {
-                                        Map<UserType, StaticUser> map = (Map<UserType, StaticUser>) context.getStore(NAMESPACE)
-                                                .getOrComputeIfAbsent(
-                                                        context.getUniqueId(),
-                                                        key -> new HashMap<>()
-                                                );
+                                        Map<UserType, StaticUser> map = getUserMap(context);
                                         map.put(ut, u);
 
                                     },
@@ -92,7 +114,7 @@ public class UsersQueueExtension implements
     }
 
     @Override
-    public void afterEach(ExtensionContext context) throws Exception {
+    public void afterEach(ExtensionContext context) {
         Map<UserType, StaticUser> map = context.getStore(NAMESPACE).get(
                 context.getUniqueId(),
                 Map.class
@@ -112,20 +134,25 @@ public class UsersQueueExtension implements
     }
 
     @Override
-    public StaticUser resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-        Map<UserType, StaticUser> map = (Map<UserType, StaticUser>) extensionContext.getStore(NAMESPACE)
-                .getOrComputeIfAbsent(
-                        extensionContext.getUniqueId(),
-                        key -> new HashMap<>());
+    public StaticUser resolveParameter(ParameterContext parameterContext, ExtensionContext context) throws ParameterResolutionException {
+        Map<UserType, StaticUser> map = getUserMap(context);
         UserType userType = parameterContext.findAnnotation(UserType.class).orElseThrow(
                 () -> new ParameterResolutionException("Annotation not found")
         );
+
 
         StaticUser staticUser = map.get(userType);
         if (staticUser == null) {
             throw new IllegalStateException("Can`t find user after 30 sec");
         }
         return staticUser;
+    }
+
+    public Map<UserType, StaticUser> getUserMap(ExtensionContext context) {
+        return (Map<UserType, StaticUser>) context.getStore(NAMESPACE)
+                .getOrComputeIfAbsent(
+                        context.getUniqueId(),
+                        key -> new HashMap<>());
     }
 
 }
