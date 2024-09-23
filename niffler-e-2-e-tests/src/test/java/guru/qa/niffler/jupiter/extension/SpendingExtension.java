@@ -9,6 +9,7 @@ import guru.qa.niffler.service.SpendDbClient;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 
+import java.sql.SQLException;
 import java.util.Date;
 
 public class SpendingExtension implements BeforeEachCallback, ParameterResolver {
@@ -37,10 +38,14 @@ public class SpendingExtension implements BeforeEachCallback, ParameterResolver 
                                 spending.description(),
                                 user.username()
                         );
-                        context.getStore(NAMESPACE).put(
-                                context.getUniqueId(),
-                                spendDbClient.createSpend(spend)
-                        );
+                        try {
+                            context.getStore(NAMESPACE).put(
+                                    context.getUniqueId(),
+                                    spendDbClient.createSpend(spend)
+                            );
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 });
     }

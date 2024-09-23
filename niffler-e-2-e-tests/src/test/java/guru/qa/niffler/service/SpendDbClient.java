@@ -9,15 +9,23 @@ import guru.qa.niffler.data.entity.spend.SpendEntity;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
 
+import java.sql.SQLException;
+import java.util.Optional;
+
 public class SpendDbClient {
 
     private final SpendDao spendDao = new SpendDaoJdbc();
     private final CategoryDao categoryDao = new CategoryDaoJdbc();
 
-    public SpendJson createSpend(SpendJson spend) {
-
+    public SpendJson createSpend(SpendJson spend) throws SQLException {
         SpendEntity spendEntity = SpendEntity.fromJson(spend);
-        if (spendEntity.getCategory().getId() == null) {
+
+        Optional<CategoryEntity> existingCategory = categoryDao.findCategoryByUsernameAndCategoryName(
+                spendEntity.getUsername(), spendEntity.getCategory().getName()
+        );
+        existingCategory.ifPresent(spendEntity::setCategory);
+
+        if (spendEntity.getCategory().getId() == null && existingCategory.isPresent()) {
             CategoryEntity categoryEntity = categoryDao.create(spendEntity.getCategory());
             spendEntity.setCategory(categoryEntity);
         }
