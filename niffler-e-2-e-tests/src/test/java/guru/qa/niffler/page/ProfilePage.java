@@ -1,5 +1,6 @@
 package guru.qa.niffler.page;
 
+import com.codeborne.selenide.ClickOptions;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 
@@ -36,7 +37,7 @@ public class ProfilePage {
     }
 
     public ProfilePage clickOnCheckboxShowArchived() {
-        showArchivedCheckBox.click();
+        showArchivedCheckBox.click(ClickOptions.usingJavaScript());
 
         return new ProfilePage();
     }

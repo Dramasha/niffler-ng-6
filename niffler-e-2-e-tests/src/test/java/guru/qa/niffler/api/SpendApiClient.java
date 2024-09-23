@@ -33,7 +33,7 @@ public class SpendApiClient {
         } catch (IOException e) {
             throw new AssertionError(e);
         }
-        assertEquals(HttpStatus.SC_OK, response.code());
+        assertEquals(HttpStatus.SC_CREATED, response.code());
         return response.body();
     }
 
