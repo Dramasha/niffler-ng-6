@@ -21,7 +21,7 @@ public class SpendDaoJdbc implements SpendDao {
     public SpendEntity create(SpendEntity spend) {
         try (Connection connection = Databases.connection(CFG.spendJdbcUrl())) {
             try (PreparedStatement statement = connection.prepareStatement(
-                    "INSERT INTO spend (username, spend_date, currncy, amount, description, category_id) VALUES (?,?,?,?,?,?)",
+                    "INSERT INTO spend (username, spend_date, currency, amount, description, category_id) VALUES (?,?,?,?,?,?)",
                     Statement.RETURN_GENERATED_KEYS
             )) {
                 statement.setString(1, spend.getUsername());
