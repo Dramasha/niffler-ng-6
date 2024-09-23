@@ -13,7 +13,7 @@ public class GhApiClient {
     private static final String GhToken = "GITHUB_TOKEN";
 
     private final Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl(Config.getInstance().spendUrl())
+            .baseUrl(Config.getInstance().ghUrl())
             .addConverterFactory(JacksonConverterFactory.create())
             .build();
 
