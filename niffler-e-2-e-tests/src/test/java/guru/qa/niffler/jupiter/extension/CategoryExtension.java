@@ -26,10 +26,7 @@ public class CategoryExtension implements BeforeEachCallback, AfterTestExecution
                                 user.username(),
                                 category.archived()
                         );
-                        CategoryJson createCategoryJson = spendDbClient.createCategory(categoryJson);
-                        if (category.archived()) {
-                            spendDbClient.deleteCategory(createCategoryJson);
-                        }
+                        spendDbClient.createCategory(categoryJson);
                         context.getStore(NAMESPACE).put(context.getUniqueId(), categoryJson);
                     }
                 });
@@ -38,14 +35,8 @@ public class CategoryExtension implements BeforeEachCallback, AfterTestExecution
     @Override
     public void afterTestExecution(ExtensionContext context) {
         CategoryJson categoryJson = context.getStore(NAMESPACE).get(context.getUniqueId(), CategoryJson.class);
-        if (categoryJson != null) {
-            CategoryJson archivedCategoryJson = new CategoryJson(
-                    categoryJson.id(),
-                    categoryJson.name(),
-                    categoryJson.username(),
-                    categoryJson.archived()
-            );
-            spendDbClient.deleteCategory(archivedCategoryJson);
+        if (categoryJson != null && !categoryJson.archived()) {
+            spendDbClient.deleteCategory(categoryJson);
         }
     }
 

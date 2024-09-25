@@ -21,7 +21,7 @@ public class ProfilePage {
             inputCategory = $("#category"),
             alertSuccessUpdate = $("[role='alert']"),
             closeAlert = $("[data-testid='CloseIcon']"),
-            categoryNames = $("[aria-label='Edit category']"),
+            categoryNames = $("div.MuiGrid-spacing-xs-2"),
             closeOrArchiveCategoryOrUnarchive = $(".MuiDialogActions-spacing");
 
     public ProfilePage setName(String name) {
@@ -64,25 +64,23 @@ public class ProfilePage {
     }
 
     public void checkCategoryByNameInProfile(String nameCategory) {
-        categoryNames.parent().parent()
-                .shouldHave(text(nameCategory));
+        categoryNames.shouldHave(text(nameCategory));
     }
 
     public void checkNotCategoryByNameInProfile(String nameCategory) {
-        categoryNames.parent().parent()
-                .shouldNotHave(text(nameCategory));
+        categoryNames.shouldNotHave(text(nameCategory));
     }
 
     public ProfilePage clickArchiveCategory(String name) {
         searchCategory.filter(text(name)).first().$("button[aria-label='Archive category']")
-                .click();
+                .click(ClickOptions.usingJavaScript());
 
         return new ProfilePage();
     }
 
     public ProfilePage clickUnarchiveCategory(String name) {
         searchCategory.filter(text(name)).first().$("[data-testid='UnarchiveOutlinedIcon']")
-                .click();
+                .click(ClickOptions.usingJavaScript());
 
         return new ProfilePage();
     }
