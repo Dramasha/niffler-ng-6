@@ -13,7 +13,7 @@ public class LoginWebTests {
     private final String invalidPassword = getRandomPassword(3,11);
 
     @Test
-    void checkCreateUser() {
+    void checkLoginWithInvalidPasswordUser() {
         String username = "Dramasha";
         open(CFG.frontDockerUrl(), LoginPage.class)
                 .login(username, invalidPassword);

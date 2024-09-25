@@ -21,7 +21,7 @@ public class LoginPage {
     }
 
     public RegisterPage clickToRegisterPage() {
-        clickCreateNewAccountButton.click();
+        clickCreateNewAccountButton.shouldBe(visible).click();
         return new RegisterPage();
     }
 
