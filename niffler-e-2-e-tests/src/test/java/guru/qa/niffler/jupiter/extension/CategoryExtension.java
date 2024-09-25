@@ -35,7 +35,7 @@ public class CategoryExtension implements BeforeEachCallback, AfterTestExecution
     @Override
     public void afterTestExecution(ExtensionContext context) {
         CategoryJson categoryJson = context.getStore(NAMESPACE).get(context.getUniqueId(), CategoryJson.class);
-        if (categoryJson != null && !categoryJson.archived()) {
+        if (categoryJson != null) {
             spendDbClient.deleteCategory(categoryJson);
         }
     }
