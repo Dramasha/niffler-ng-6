@@ -20,12 +20,12 @@ public class SpendDbClient {
     public SpendJson createSpend(SpendJson spend) throws SQLException {
         SpendEntity spendEntity = SpendEntity.fromJson(spend);
 
-        Optional<CategoryEntity> existingCategory = categoryDao.findCategoryByUsernameAndCategoryName(
+        Optional<CategoryEntity> existingCategory = categoryDao.findByUsernameAndCategoryName(
                 spendEntity.getUsername(), spendEntity.getCategory().getName()
         );
         existingCategory.ifPresent(spendEntity::setCategory);
 
-        if (spendEntity.getCategory().getId() == null && existingCategory.isPresent()) {
+        if (spendEntity.getCategory().getId() == null && existingCategory.isEmpty()) {
             CategoryEntity categoryEntity = categoryDao.create(spendEntity.getCategory());
             spendEntity.setCategory(categoryEntity);
         }
@@ -36,7 +36,7 @@ public class SpendDbClient {
 
     public void deleteSpend(SpendJson spend) {
         SpendEntity spendEntity = SpendEntity.fromJson(spend);
-        spendDao.deleteSpendById(spendEntity);
+        spendDao.deleteById(spendEntity);
     }
 
     public CategoryJson createCategory(CategoryJson spend) {
@@ -48,6 +48,6 @@ public class SpendDbClient {
 
     public void deleteCategory(CategoryJson category) {
         CategoryEntity categoryEntity = CategoryEntity.fromJson(category);
-        categoryDao.deleteCategoryById(categoryEntity);
+        categoryDao.deleteById(categoryEntity);
     }
 }

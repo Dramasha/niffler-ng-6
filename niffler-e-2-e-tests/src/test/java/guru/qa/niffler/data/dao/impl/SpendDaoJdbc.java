@@ -51,7 +51,7 @@ public class SpendDaoJdbc implements SpendDao {
         }
     }
 
-    public Optional<SpendEntity> findSpendById(UUID id) {
+    public Optional<SpendEntity> findById(UUID id) {
         try (Connection connection = Databases.connection(CFG.spendJdbcUrl())) {
             try (PreparedStatement statement = connection.prepareStatement(
                     "SELECT * FROM spend WHERE id = ?"
@@ -82,7 +82,7 @@ public class SpendDaoJdbc implements SpendDao {
         }
     }
 
-    public List<SpendEntity> findAllSpendsByUsername(String username) {
+    public List<SpendEntity> findAllByUsername(String username) {
         List<SpendEntity> spends = new ArrayList<>();
         try (Connection connection = Databases.connection(CFG.spendJdbcUrl())) {
             try (PreparedStatement statement = connection.prepareStatement(
@@ -111,7 +111,7 @@ public class SpendDaoJdbc implements SpendDao {
         return spends;
     }
 
-    public void deleteSpendById(SpendEntity spend) {
+    public void deleteById(SpendEntity spend) {
         try (Connection connection = Databases.connection(CFG.spendJdbcUrl());
              PreparedStatement statement = connection.prepareStatement(
                      "DELETE FROM spend WHERE id = ?"

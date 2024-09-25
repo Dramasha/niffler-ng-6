@@ -24,19 +24,13 @@ public class CategoryExtension implements BeforeEachCallback, AfterTestExecution
                                 null,
                                 category.title().isEmpty() ? getRandomCategoryName() : category.title(),
                                 user.username(),
-                                false
+                                category.archived()
                         );
                         CategoryJson createCategoryJson = spendDbClient.createCategory(categoryJson);
                         if (category.archived()) {
-                            CategoryJson archivedCategoryJson = new CategoryJson(
-                                    createCategoryJson.id(),
-                                    createCategoryJson.name(),
-                                    createCategoryJson.username(),
-                                    true
-                            );
-                            spendDbClient.deleteCategory(archivedCategoryJson);
+                            spendDbClient.deleteCategory(createCategoryJson);
                         }
-                        context.getStore(NAMESPACE).put(context.getUniqueId(), createCategoryJson);
+                        context.getStore(NAMESPACE).put(context.getUniqueId(), categoryJson);
                     }
                 });
     }
@@ -49,7 +43,7 @@ public class CategoryExtension implements BeforeEachCallback, AfterTestExecution
                     categoryJson.id(),
                     categoryJson.name(),
                     categoryJson.username(),
-                    true
+                    categoryJson.archived()
             );
             spendDbClient.deleteCategory(archivedCategoryJson);
         }

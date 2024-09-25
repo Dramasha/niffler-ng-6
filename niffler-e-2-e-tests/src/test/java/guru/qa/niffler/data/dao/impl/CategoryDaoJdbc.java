@@ -4,9 +4,6 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.Databases;
 import guru.qa.niffler.data.dao.CategoryDao;
 import guru.qa.niffler.data.entity.spend.CategoryEntity;
-import guru.qa.niffler.data.entity.spend.SpendEntity;
-import guru.qa.niffler.model.CurrencyValues;
-import org.apache.kafka.common.quota.ClientQuotaAlteration;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -51,7 +48,7 @@ public class CategoryDaoJdbc implements CategoryDao {
 
 
     @Override
-    public Optional<CategoryEntity> findCategoryById(UUID id) {
+    public Optional<CategoryEntity> findById(UUID id) {
         try (Connection connection = Databases.connection(CFG.spendJdbcUrl())) {
             try (PreparedStatement statement = connection.prepareStatement(
                     "SELECT * FROM category WHERE id = ?"
@@ -78,7 +75,7 @@ public class CategoryDaoJdbc implements CategoryDao {
         }
     }
 
-    public Optional<CategoryEntity> findCategoryByUsernameAndCategoryName(String username, String categoryName) throws SQLException {
+    public Optional<CategoryEntity> findByUsernameAndCategoryName(String username, String categoryName) throws SQLException {
         try (Connection connection = Databases.connection(CFG.spendJdbcUrl())) {
             try (PreparedStatement statement = connection.prepareStatement(
                     "SELECT * FROM category WHERE username = ? AND name = ?"
@@ -105,7 +102,7 @@ public class CategoryDaoJdbc implements CategoryDao {
         }
     }
 
-    public List<CategoryEntity> findAllCategoriesByUsername(String username) {
+    public List<CategoryEntity> findAllByUsername(String username) {
         List<CategoryEntity> categories = new ArrayList<>();
         try (Connection connection = Databases.connection(CFG.spendJdbcUrl())) {
             try (PreparedStatement statement = connection.prepareStatement(
@@ -131,7 +128,7 @@ public class CategoryDaoJdbc implements CategoryDao {
         return categories;
     }
 
-    public void deleteCategoryById(CategoryEntity category) {
+    public void deleteById(CategoryEntity category) {
         try (Connection connection = Databases.connection(CFG.spendJdbcUrl());
              PreparedStatement statement = connection.prepareStatement(
                      "DELETE FROM category WHERE id = ?"
