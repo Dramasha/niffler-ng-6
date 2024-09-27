@@ -5,12 +5,12 @@ import com.atomikos.jdbc.AtomikosDataSourceBean;
 import jakarta.transaction.SystemException;
 import jakarta.transaction.UserTransaction;
 import org.apache.commons.lang3.StringUtils;
-import org.postgresql.ds.PGSimpleDataSource;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,17 +24,21 @@ public class Databases {
     private static final Map<String, DataSource> dataSources = new ConcurrentHashMap<>();
     private static final Map<Long, Map<String, Connection>> threadConnections = new ConcurrentHashMap<>();
 
-    public record XaFunction<T>(Function<Connection, T> function, String jdbcUrl) {}
+    public record XaFunction<T>(Function<Connection, T> function, String jdbcUrl) {
+    }
 
 
-    public record XaConsumer(Consumer<Connection> consumer, String jdbcUrl) {}
+    public record XaConsumer(Consumer<Connection> consumer, String jdbcUrl) {
+    }
 
 
-    public static <T> T transaction(Function<Connection, T> function, String jdbcUrl) {
+    public static <T> T transaction(Function<Connection, T> function, String jdbcUrl, int isolationLevel) {
         Connection connection = null;
         try {
             connection = connection(jdbcUrl);
             connection.setAutoCommit(false);
+            connection.setTransactionIsolation(isolationLevel);
+
             T result = function.apply(connection);
             connection.commit();
             connection.setAutoCommit(true);
@@ -52,13 +56,16 @@ public class Databases {
         }
     }
 
-    public static <T> T xaTransaction(XaFunction<T>... actions) {
+    public static <T> T xaTransaction(int isolationLevel,  List<XaFunction<T>> actions) {
         UserTransaction ut = new UserTransactionImp();
         try {
             ut.begin();
             T result = null;
             for (XaFunction<T> action : actions) {
-                result = action.function.apply(connection(action.jdbcUrl));
+                try (Connection connection = connection(action.jdbcUrl)) {
+                    connection.setTransactionIsolation(isolationLevel);
+                    result = action.function.apply(connection(action.jdbcUrl));
+                }
             }
             ut.commit();
             return result;
@@ -114,61 +121,61 @@ public class Databases {
     }
 
 
-        private static DataSource getDataSource (String jdbcUrl){
-            return dataSources.computeIfAbsent(
-                    jdbcUrl,
-                    key -> {
-                        AtomikosDataSourceBean dsBean = new AtomikosDataSourceBean();
-                        final String uniqId = StringUtils.substringAfter(jdbcUrl, "5432/");
-                        dsBean.setUniqueResourceName(uniqId);
-                        dsBean.setXaDataSourceClassName("org.postgresql.xa.PGXADataSource");
-                        Properties properties = new Properties();
-                        properties.put("URL", jdbcUrl);
-                        properties.put("user", "postgres");
-                        properties.put("password", "secret");
-                        dsBean.setXaProperties(properties);
-                        dsBean.setPoolSize(10);
-                        return dsBean;
-                    }
-            );
-        }
+    private static DataSource getDataSource(String jdbcUrl) {
+        return dataSources.computeIfAbsent(
+                jdbcUrl,
+                key -> {
+                    AtomikosDataSourceBean dsBean = new AtomikosDataSourceBean();
+                    final String uniqId = StringUtils.substringAfter(jdbcUrl, "5432/");
+                    dsBean.setUniqueResourceName(uniqId);
+                    dsBean.setXaDataSourceClassName("org.postgresql.xa.PGXADataSource");
+                    Properties properties = new Properties();
+                    properties.put("URL", jdbcUrl);
+                    properties.put("user", "postgres");
+                    properties.put("password", "secret");
+                    dsBean.setXaProperties(properties);
+                    dsBean.setPoolSize(10);
+                    return dsBean;
+                }
+        );
+    }
 
-        public static Connection connection (String jdbcUrl) throws SQLException {
-            return threadConnections.computeIfAbsent(
-                    Thread.currentThread().threadId(),
-                    key -> {
-                        try {
-                            return new HashMap<>(Map.of(
-                                    jdbcUrl,
-                                    getDataSource(jdbcUrl).getConnection()
-                            ));
-                        } catch (SQLException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-            ).computeIfAbsent(
-                    jdbcUrl,
-                    key -> {
-                        try {
-                            return getDataSource(jdbcUrl).getConnection();
-                        } catch (SQLException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-            );
-        }
-
-        public static void closeAllConnections () {
-            for (Map<String, Connection> connectionsMap : threadConnections.values()) {
-                for (Connection connection : connectionsMap.values()) {
+    public static Connection connection(String jdbcUrl) throws SQLException {
+        return threadConnections.computeIfAbsent(
+                Thread.currentThread().threadId(),
+                key -> {
                     try {
-                        if (connection != null && !connection.isClosed()) {
-                            connection.close();
-                        }
+                        return new HashMap<>(Map.of(
+                                jdbcUrl,
+                                getDataSource(jdbcUrl).getConnection()
+                        ));
                     } catch (SQLException e) {
-                        //NOP
+                        throw new RuntimeException(e);
                     }
+                }
+        ).computeIfAbsent(
+                jdbcUrl,
+                key -> {
+                    try {
+                        return getDataSource(jdbcUrl).getConnection();
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+        );
+    }
+
+    public static void closeAllConnections() {
+        for (Map<String, Connection> connectionsMap : threadConnections.values()) {
+            for (Connection connection : connectionsMap.values()) {
+                try {
+                    if (connection != null && !connection.isClosed()) {
+                        connection.close();
+                    }
+                } catch (SQLException e) {
+                    //NOP
                 }
             }
         }
     }
+}
