@@ -16,30 +16,28 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
         this.connection = connection;
     }
 
-    @Override
-    public AuthAuthorityEntity create(AuthAuthorityEntity authAuthority) {
+    public void create(AuthAuthorityEntity... authAuthorities) {
+        for (AuthAuthorityEntity authAuthority : authAuthorities) {
+            try (PreparedStatement statement = connection.prepareStatement(
+                    "INSERT INTO authority (user_id, authority) VALUES (?, ?)",
+                    Statement.RETURN_GENERATED_KEYS
+            )) {
+                statement.setObject(1, authAuthority.getUser().getId());
+                statement.setString(2, authAuthority.getAuthority().name());
 
-        try (PreparedStatement statement = connection.prepareStatement(
-                "INSERT INTO authority (user_id, authority) VALUES (?,?)",
-                Statement.RETURN_GENERATED_KEYS
-        )) {
-            statement.setObject(1, authAuthority.getUser().getId());
-            statement.setString(2, authAuthority.getAuthority().name());
+                statement.executeUpdate();
 
-            statement.executeUpdate();
-
-            final UUID generatedKey;
-            try (ResultSet resultSet = statement.getGeneratedKeys()) {
-                if (resultSet.next()) {
-                    generatedKey = resultSet.getObject("id", UUID.class);
-                } else {
-                    throw new SQLException("Cant find id in ResultSet");
+                try (ResultSet resultSet = statement.getGeneratedKeys()) {
+                    if (resultSet.next()) {
+                        UUID generatedKey = resultSet.getObject("id", UUID.class);
+                        authAuthority.setId(generatedKey);
+                    } else {
+                        throw new SQLException("Cant find id in ResultSet");
+                    }
                 }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
-            authAuthority.setId(generatedKey);
-            return authAuthority;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
