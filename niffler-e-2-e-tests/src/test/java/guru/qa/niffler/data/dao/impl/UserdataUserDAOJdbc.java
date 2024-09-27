@@ -1,7 +1,6 @@
 package guru.qa.niffler.data.dao.impl;
 
 import guru.qa.niffler.config.Config;
-import guru.qa.niffler.data.Databases;
 import guru.qa.niffler.data.dao.UserdataUserDAO;
 import guru.qa.niffler.data.entity.user.UserEntity;
 import guru.qa.niffler.model.CurrencyValues;
@@ -51,7 +50,7 @@ public class UserdataUserDAOJdbc implements UserdataUserDAO {
         }
     }
 
-    public Optional<UserEntity> findUserById(UUID id) {
+    public Optional<UserEntity> findById(UUID id) {
         try (PreparedStatement statement = connection.prepareStatement(
                 "SELECT * FROM user WHERE id = ?"
         )) {
@@ -80,7 +79,7 @@ public class UserdataUserDAOJdbc implements UserdataUserDAO {
         }
     }
 
-    public Optional<UserEntity> findUserByUsername(UserEntity username) {
+    public Optional<UserEntity> findByUsername(UserEntity username) {
         try (PreparedStatement statement = connection.prepareStatement(
                 "SELECT * FROM user WHERE username = ?"
         )) {
@@ -109,7 +108,7 @@ public class UserdataUserDAOJdbc implements UserdataUserDAO {
         }
     }
 
-    public void deleteSpendById(UserEntity user) {
+    public void deleteById(UserEntity user) {
         try (PreparedStatement statement = connection.prepareStatement(
                 "DELETE FROM user WHERE id = ?"
         )) {
