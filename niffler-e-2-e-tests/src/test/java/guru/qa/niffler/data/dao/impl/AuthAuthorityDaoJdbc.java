@@ -4,7 +4,6 @@ import guru.qa.niffler.data.dao.AuthAuthorityDao;
 import guru.qa.niffler.data.entity.auth.AuthAuthorityEntity;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.entity.auth.Authority;
-import guru.qa.niffler.data.entity.user.UserEntity;
 
 import java.sql.*;
 import java.util.Optional;
@@ -70,11 +69,11 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
         }
     }
 
-    public Optional<AuthAuthorityEntity> findByUserId(int user_id) {
+    public Optional<AuthAuthorityEntity> findByUserId(UUID user_id) {
         try (PreparedStatement statement = connection.prepareStatement(
                 "SELECT * FROM authority WHERE user_id = ?"
         )) {
-            statement.setInt(1, user_id);
+            statement.setObject(1, user_id);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
 
