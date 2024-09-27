@@ -85,4 +85,13 @@ public class CategoryDaoSpringJdbc implements CategoryDao {
                 category.getId()
         );
     }
+
+    @Override
+    public List<CategoryEntity> findAll() {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        return jdbcTemplate.query(
+                "SELECT * FROM category",
+                CategoryEntityRowMapper.instance
+        );
+    }
 }
