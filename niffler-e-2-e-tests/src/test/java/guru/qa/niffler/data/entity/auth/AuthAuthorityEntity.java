@@ -8,7 +8,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class AuthorityEntity implements Serializable {
+public class AuthAuthorityEntity implements Serializable {
   private UUID id;
   private Authority authority;
   private AuthUserEntity user;
