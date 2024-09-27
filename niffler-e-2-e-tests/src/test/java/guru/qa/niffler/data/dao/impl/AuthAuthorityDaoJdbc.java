@@ -6,6 +6,8 @@ import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.entity.auth.Authority;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -104,5 +106,28 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public List<AuthAuthorityEntity> findAll() {
+        List<AuthAuthorityEntity> authAuthority = new ArrayList<>();
+        try (PreparedStatement statement = connection.prepareStatement(
+                "SELECT * FROM authority"
+        )) {
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    AuthAuthorityEntity authority = new AuthAuthorityEntity();
+
+                    authority.setId(resultSet.getObject("id", UUID.class));
+                    authority.setUser(resultSet.getObject("user_id", AuthUserEntity.class));
+                    authority.setAuthority(resultSet.getObject("authority", Authority.class));
+
+                    authAuthority.add(authority);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return authAuthority;
     }
 }
