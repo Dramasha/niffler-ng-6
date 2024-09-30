@@ -11,7 +11,7 @@ public interface AuthAuthorityDao {
 
     Optional<AuthAuthorityEntity> findById(UUID id);
 
-    Optional<AuthAuthorityEntity> findByUserId(UUID user_id);
+    Optional<AuthAuthorityEntity> findByUserId(UUID userId);
 
-    void deleteById(AuthAuthorityEntity authAuthority);
+    void delete(AuthAuthorityEntity authAuthority);
 }
