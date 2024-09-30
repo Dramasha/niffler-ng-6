@@ -45,17 +45,35 @@ public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
 
     @Override
     public Optional<AuthAuthorityEntity> findById(UUID id) {
-        return Optional.empty();
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        return Optional.ofNullable(
+                jdbcTemplate.queryForObject(
+                        "SELECT * FROM authority WHERE user_id = ?",
+                        AuthAuthorityEntityRowMapper.instance,
+                        id
+                )
+        );
     }
 
     @Override
-    public Optional<AuthAuthorityEntity> findByUserId(UUID user_id) {
-        return Optional.empty();
+    public Optional<AuthAuthorityEntity> findByUserId(UUID userId) {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        return Optional.ofNullable(
+                jdbcTemplate.queryForObject(
+                        "SELECT * FROM authority WHERE user_id = ?",
+                        AuthAuthorityEntityRowMapper.instance,
+                        userId
+                )
+        );
     }
 
     @Override
-    public void deleteById(AuthAuthorityEntity authAuthority) {
-
+    public void delete(AuthAuthorityEntity authAuthority) {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        jdbcTemplate.update(
+                "DELETE FROM authority WHERE id = ?",
+                authAuthority.getId()
+        );
     }
 
     @Override

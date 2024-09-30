@@ -69,7 +69,7 @@ public class SpendDaoSpringJdbc implements SpendDao {
     }
 
     @Override
-    public void deleteById(SpendEntity spend) {
+    public void delete(SpendEntity spend) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
         jdbcTemplate.update(
                 "DELETE FROM spend WHERE id = ?",
@@ -84,6 +84,5 @@ public class SpendDaoSpringJdbc implements SpendDao {
                 "SELECT * FROM spend",
                 SpendEntityRowMapper.instance
         );
-
     }
 }

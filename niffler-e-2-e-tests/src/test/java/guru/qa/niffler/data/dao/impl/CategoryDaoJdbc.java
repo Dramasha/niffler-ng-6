@@ -122,7 +122,7 @@ public class CategoryDaoJdbc implements CategoryDao {
         return categories;
     }
 
-    public void deleteById(CategoryEntity category) {
+    public void delete(CategoryEntity category) {
         try (PreparedStatement statement = connection.prepareStatement(
                      "DELETE FROM category WHERE id = ?"
              )) {

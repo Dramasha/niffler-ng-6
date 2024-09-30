@@ -69,11 +69,11 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
         }
     }
 
-    public Optional<AuthAuthorityEntity> findByUserId(UUID user_id) {
+    public Optional<AuthAuthorityEntity> findByUserId(UUID userId) {
         try (PreparedStatement statement = connection.prepareStatement(
                 "SELECT * FROM authority WHERE user_id = ?"
         )) {
-            statement.setObject(1, user_id);
+            statement.setObject(1, userId);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
 
@@ -95,7 +95,7 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
         }
     }
 
-    public void deleteById(AuthAuthorityEntity authAuthority) {
+    public void delete(AuthAuthorityEntity authAuthority) {
         try (PreparedStatement statement = connection.prepareStatement(
                 "DELETE FROM authority WHERE id = ?"
         )) {
