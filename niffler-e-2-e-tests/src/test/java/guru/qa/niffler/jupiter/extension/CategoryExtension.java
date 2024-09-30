@@ -7,6 +7,8 @@ import guru.qa.niffler.service.SpendDbClient;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 
+import java.sql.Connection;
+
 import static guru.qa.niffler.utils.RandomDataUtils.getRandomCategoryName;
 
 public class CategoryExtension implements BeforeEachCallback, AfterTestExecutionCallback, ParameterResolver {
@@ -26,7 +28,7 @@ public class CategoryExtension implements BeforeEachCallback, AfterTestExecution
                                 user.username(),
                                 category.archived()
                         );
-                        spendDbClient.createCategory(categoryJson);
+                        spendDbClient.createCategory(categoryJson, Connection.TRANSACTION_READ_COMMITTED);
                         context.getStore(NAMESPACE).put(context.getUniqueId(), categoryJson);
                     }
                 });
@@ -35,7 +37,7 @@ public class CategoryExtension implements BeforeEachCallback, AfterTestExecution
     @Override
     public void afterTestExecution(ExtensionContext context) {
         CategoryJson categoryJson = context.getStore(NAMESPACE).get(context.getUniqueId(), CategoryJson.class);
-        if (categoryJson != null && !categoryJson.archived()) {
+        if (categoryJson != null) {
             spendDbClient.deleteCategory(categoryJson);
         }
     }

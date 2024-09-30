@@ -1,7 +1,6 @@
 package guru.qa.niffler.service;
 
-import guru.qa.niffler.data.dao.CategoryDao;
-import guru.qa.niffler.data.dao.SpendDao;
+import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.impl.CategoryDaoJdbc;
 import guru.qa.niffler.data.dao.impl.SpendDaoJdbc;
 import guru.qa.niffler.data.entity.spend.CategoryEntity;
@@ -12,42 +11,60 @@ import guru.qa.niffler.model.SpendJson;
 import java.sql.SQLException;
 import java.util.Optional;
 
+import static guru.qa.niffler.data.Databases.transaction;
+
 public class SpendDbClient {
 
-    private final SpendDao spendDao = new SpendDaoJdbc();
-    private final CategoryDao categoryDao = new CategoryDaoJdbc();
+    private static final Config CFG = Config.getInstance();
 
-    public SpendJson createSpend(SpendJson spend) throws SQLException {
-        SpendEntity spendEntity = SpendEntity.fromJson(spend);
 
-        Optional<CategoryEntity> existingCategory = categoryDao.findByUsernameAndCategoryName(
-                spendEntity.getUsername(), spendEntity.getCategory().getName()
+    public SpendJson createSpend(SpendJson spend, int isolationLevel) throws SQLException {
+        return transaction(connection -> {
+                    SpendEntity spendEntity = SpendEntity.fromJson(spend);
+
+                    Optional<CategoryEntity> existingCategory = new CategoryDaoJdbc(connection).findByUsernameAndCategoryName(
+                            spendEntity.getUsername(), spendEntity.getCategory().getName()
+                    );
+                    existingCategory.ifPresent(spendEntity::setCategory);
+
+                    if (spendEntity.getCategory().getId() == null && existingCategory.isEmpty()) {
+                        CategoryEntity categoryEntity = new CategoryDaoJdbc(connection).create(spendEntity.getCategory());
+                        spendEntity.setCategory(categoryEntity);
+                    }
+                    return SpendJson.fromEntity(
+                            new SpendDaoJdbc(connection).create(spendEntity)
+                    );
+                }, CFG.spendJdbcUrl(), isolationLevel
         );
-        existingCategory.ifPresent(spendEntity::setCategory);
 
-        if (spendEntity.getCategory().getId() == null && existingCategory.isEmpty()) {
-            CategoryEntity categoryEntity = categoryDao.create(spendEntity.getCategory());
-            spendEntity.setCategory(categoryEntity);
-        }
-        return SpendJson.fromEntity(
-                spendDao.create(spendEntity)
-        );
+
     }
 
     public void deleteSpend(SpendJson spend) {
-        SpendEntity spendEntity = SpendEntity.fromJson(spend);
-        spendDao.deleteById(spendEntity);
+        transaction(connection -> {
+                    SpendEntity spendEntity = SpendEntity.fromJson(spend);
+
+                    new SpendDaoJdbc(connection).deleteById(spendEntity);
+                }, CFG.spendJdbcUrl()
+        );
+
     }
 
-    public CategoryJson createCategory(CategoryJson spend) {
-        CategoryEntity categoryEntity = CategoryEntity.fromJson(spend);
-        return CategoryJson.fromEntity(
-                categoryDao.create(categoryEntity)
+    public CategoryJson createCategory(CategoryJson spend, int isolationLevel) {
+        return transaction(connection -> {
+                    CategoryEntity categoryEntity = CategoryEntity.fromJson(spend);
+                    return CategoryJson.fromEntity(
+                            new CategoryDaoJdbc(connection).create(categoryEntity)
+                    );
+                }, CFG.spendJdbcUrl(), isolationLevel
         );
     }
 
     public void deleteCategory(CategoryJson category) {
-        CategoryEntity categoryEntity = CategoryEntity.fromJson(category);
-        categoryDao.deleteById(categoryEntity);
+        transaction(connection -> {
+                    CategoryEntity categoryEntity = CategoryEntity.fromJson(category);
+                    new CategoryDaoJdbc(connection).deleteById(categoryEntity);
+                }, CFG.spendJdbcUrl()
+        );
     }
 }
