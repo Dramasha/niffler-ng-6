@@ -5,6 +5,8 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -79,13 +81,14 @@ public class AuthUserDaoJdbc implements guru.qa.niffler.data.dao.AuthUserDao {
         }
     }
 
-    public Optional<AuthUserEntity> findByUsername(String username) {
+    public List<AuthUserEntity> findByUsername(String username) {
+        List<AuthUserEntity> authUsers = new ArrayList<>();
         try (PreparedStatement statement = connection.prepareStatement(
                 "SELECT * FROM \"user\" WHERE username = ?"
         )) {
             statement.setString(1, username);
             try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
+                while (resultSet.next()) {
 
                     AuthUserEntity authUser = new AuthUserEntity();
 
@@ -97,19 +100,16 @@ public class AuthUserDaoJdbc implements guru.qa.niffler.data.dao.AuthUserDao {
                     authUser.setAccountNonLocked(resultSet.getBoolean("account_non_locked"));
                     authUser.setCredentialsNonExpired(resultSet.getBoolean("credentials_non_expired"));
 
-                    return Optional.of(authUser);
+                    authUsers.add(authUser);
                 }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
             }
-
-            return Optional.empty();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        return authUsers;
     }
 
-    public void deleteById(AuthUserEntity authUser) {
+    public void delete(AuthUserEntity authUser) {
         try (PreparedStatement statement = connection.prepareStatement(
                 "DELETE FROM \"user\" WHERE id = ?"
         )) {
@@ -120,5 +120,32 @@ public class AuthUserDaoJdbc implements guru.qa.niffler.data.dao.AuthUserDao {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public List<AuthUserEntity> findAll() {
+        List<AuthUserEntity> authUsers = new ArrayList<>();
+        try (PreparedStatement statement = connection.prepareStatement(
+                "SELECT * FROM spend"
+        )) {
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    AuthUserEntity authUser = new AuthUserEntity();
+
+                    authUser.setId(resultSet.getObject("id", UUID.class));
+                    authUser.setUsername(resultSet.getString("username"));
+                    authUser.setPassword(resultSet.getString("password"));
+                    authUser.setEnabled(resultSet.getBoolean("enabled"));
+                    authUser.setAccountNonExpired(resultSet.getBoolean("account_non_expired"));
+                    authUser.setAccountNonLocked(resultSet.getBoolean("account_non_locked"));
+                    authUser.setCredentialsNonExpired(resultSet.getBoolean("credentials_non_expired"));
+
+                    authUsers.add(authUser);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return authUsers;
     }
 }

@@ -27,10 +27,8 @@ public class Databases {
     public record XaFunction<T>(Function<Connection, T> function, String jdbcUrl) {
     }
 
-
     public record XaConsumer(Consumer<Connection> consumer, String jdbcUrl) {
     }
-
 
     public static <T> T transaction(Function<Connection, T> function, String jdbcUrl, int isolationLevel) {
         Connection connection = null;
@@ -119,7 +117,6 @@ public class Databases {
             throw new RuntimeException(e);
         }
     }
-
 
     private static DataSource getDataSource(String jdbcUrl) {
         return dataSources.computeIfAbsent(

@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface CategoryDao {
-    CategoryEntity create(CategoryEntity spend);
+    CategoryEntity create(CategoryEntity category);
 
     Optional<CategoryEntity> findById(UUID id);
 
@@ -16,5 +16,7 @@ public interface CategoryDao {
 
     List<CategoryEntity> findAllByUsername(String username);
 
-    void deleteById(CategoryEntity category);
+    void delete(CategoryEntity category);
+
+    List<CategoryEntity> findAll();
 }

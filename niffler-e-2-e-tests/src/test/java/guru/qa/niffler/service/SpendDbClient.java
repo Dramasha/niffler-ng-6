@@ -44,7 +44,7 @@ public class SpendDbClient {
         transaction(connection -> {
                     SpendEntity spendEntity = SpendEntity.fromJson(spend);
 
-                    new SpendDaoJdbc(connection).deleteById(spendEntity);
+                    new SpendDaoJdbc(connection).delete(spendEntity);
                 }, CFG.spendJdbcUrl()
         );
 
@@ -63,7 +63,7 @@ public class SpendDbClient {
     public void deleteCategory(CategoryJson category) {
         transaction(connection -> {
                     CategoryEntity categoryEntity = CategoryEntity.fromJson(category);
-                    new CategoryDaoJdbc(connection).deleteById(categoryEntity);
+                    new CategoryDaoJdbc(connection).delete(categoryEntity);
                 }, CFG.spendJdbcUrl()
         );
     }
