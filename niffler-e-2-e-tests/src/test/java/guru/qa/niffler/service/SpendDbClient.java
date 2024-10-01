@@ -17,7 +17,6 @@ public class SpendDbClient {
 
     private static final Config CFG = Config.getInstance();
 
-
     public SpendJson createSpend(SpendJson spend, int isolationLevel) throws SQLException {
         return transaction(connection -> {
                     SpendEntity spendEntity = SpendEntity.fromJson(spend);
@@ -36,8 +35,6 @@ public class SpendDbClient {
                     );
                 }, CFG.spendJdbcUrl(), isolationLevel
         );
-
-
     }
 
     public void deleteSpend(SpendJson spend) {
@@ -47,7 +44,6 @@ public class SpendDbClient {
                     new SpendDaoJdbc(connection).delete(spendEntity);
                 }, CFG.spendJdbcUrl()
         );
-
     }
 
     public CategoryJson createCategory(CategoryJson spend, int isolationLevel) {

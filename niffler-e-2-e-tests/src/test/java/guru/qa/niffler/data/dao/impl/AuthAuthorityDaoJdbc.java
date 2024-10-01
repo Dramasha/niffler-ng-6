@@ -1,9 +1,11 @@
 package guru.qa.niffler.data.dao.impl;
 
+import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.AuthAuthorityDao;
 import guru.qa.niffler.data.entity.auth.AuthAuthorityEntity;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.entity.auth.Authority;
+import wiremock.org.checkerframework.checker.units.qual.C;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,16 +13,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
-    private final Connection connection;
+import static guru.qa.niffler.data.tpl.Connections.holder;
 
-    public AuthAuthorityDaoJdbc(Connection connection) {
-        this.connection = connection;
-    }
+public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
+
+    private static final Config CFG = Config.getInstance();
 
     public void create(AuthAuthorityEntity... authAuthorities) {
         for (AuthAuthorityEntity authAuthority : authAuthorities) {
-            try (PreparedStatement statement = connection.prepareStatement(
+            try (PreparedStatement statement = holder(CFG.authJdbcUrl()).connection().prepareStatement(
                     "INSERT INTO authority (user_id, authority) VALUES (?, ?)",
                     Statement.RETURN_GENERATED_KEYS
             )) {
