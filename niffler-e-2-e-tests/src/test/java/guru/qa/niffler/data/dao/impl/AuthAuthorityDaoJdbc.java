@@ -5,7 +5,6 @@ import guru.qa.niffler.data.dao.AuthAuthorityDao;
 import guru.qa.niffler.data.entity.auth.AuthAuthorityEntity;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.entity.auth.Authority;
-import wiremock.org.checkerframework.checker.units.qual.C;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -46,7 +45,7 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
 
     @Override
     public Optional<AuthAuthorityEntity> findById(UUID id) {
-        try (PreparedStatement statement = connection.prepareStatement(
+        try (PreparedStatement statement = holder(CFG.authJdbcUrl()).connection().prepareStatement(
                 "SELECT * FROM authority WHERE id = ?"
         )) {
             statement.setObject(1, id);
@@ -71,7 +70,7 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
     }
 
     public Optional<AuthAuthorityEntity> findByUserId(UUID userId) {
-        try (PreparedStatement statement = connection.prepareStatement(
+        try (PreparedStatement statement = holder(CFG.authJdbcUrl()).connection().prepareStatement(
                 "SELECT * FROM authority WHERE user_id = ?"
         )) {
             statement.setObject(1, userId);
@@ -97,7 +96,7 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
     }
 
     public void delete(AuthAuthorityEntity authAuthority) {
-        try (PreparedStatement statement = connection.prepareStatement(
+        try (PreparedStatement statement = holder(CFG.authJdbcUrl()).connection().prepareStatement(
                 "DELETE FROM authority WHERE id = ?"
         )) {
 
@@ -112,7 +111,7 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
     @Override
     public List<AuthAuthorityEntity> findAll() {
         List<AuthAuthorityEntity> authAuthority = new ArrayList<>();
-        try (PreparedStatement statement = connection.prepareStatement(
+        try (PreparedStatement statement = holder(CFG.authJdbcUrl()).connection().prepareStatement(
                 "SELECT * FROM authority"
         )) {
             try (ResultSet resultSet = statement.executeQuery()) {

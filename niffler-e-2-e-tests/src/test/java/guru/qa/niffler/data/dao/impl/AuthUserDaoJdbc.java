@@ -16,6 +16,7 @@ import static guru.qa.niffler.data.tpl.Connections.holder;
 public class AuthUserDaoJdbc implements guru.qa.niffler.data.dao.AuthUserDao {
 
     private static final Config CFG = Config.getInstance();
+    private static final PasswordEncoder pe = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
     @Override
     public AuthUserEntity create(AuthUserEntity authUser) {
