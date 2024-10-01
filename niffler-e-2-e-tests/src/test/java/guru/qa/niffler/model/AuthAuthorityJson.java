@@ -4,6 +4,6 @@ import java.util.UUID;
 
 public record AuthAuthorityJson (
         UUID id,
-        int user_id,
+        int userId,
         String authority
 ) {}
