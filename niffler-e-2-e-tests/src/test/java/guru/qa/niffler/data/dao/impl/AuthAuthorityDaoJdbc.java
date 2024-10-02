@@ -3,7 +3,6 @@ package guru.qa.niffler.data.dao.impl;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.AuthAuthorityDao;
 import guru.qa.niffler.data.entity.auth.AuthAuthorityEntity;
-import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.entity.auth.Authority;
 
 import java.sql.*;
@@ -24,7 +23,7 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
                     "INSERT INTO authority (user_id, authority) VALUES (?, ?)",
                     Statement.RETURN_GENERATED_KEYS
             )) {
-                statement.setObject(1, authAuthority.getUser().getId());
+                statement.setObject(1, authAuthority.getUserId());
                 statement.setString(2, authAuthority.getAuthority().name());
 
                 statement.executeUpdate();
@@ -56,7 +55,7 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
                     AuthAuthorityEntity authAuthority = new AuthAuthorityEntity();
 
                     authAuthority.setId(resultSet.getObject("id", UUID.class));
-                    authAuthority.setUser(resultSet.getObject("user_id", AuthUserEntity.class));
+                    authAuthority.setUserId(resultSet.getObject("user_id", UUID.class));
                     authAuthority.setAuthority(resultSet.getObject("authority", Authority.class));
 
                     return Optional.of(authAuthority);
@@ -80,7 +79,7 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
                     AuthAuthorityEntity authAuthority = new AuthAuthorityEntity();
 
                     authAuthority.setId(resultSet.getObject("id", UUID.class));
-                    authAuthority.setUser(resultSet.getObject("user_id", AuthUserEntity.class));
+                    authAuthority.setUserId(resultSet.getObject("user_id", UUID.class));
                     authAuthority.setAuthority(resultSet.getObject("authority", Authority.class));
 
                     return Optional.of(authAuthority);
@@ -119,7 +118,7 @@ public class AuthAuthorityDaoJdbc implements AuthAuthorityDao {
                     AuthAuthorityEntity authority = new AuthAuthorityEntity();
 
                     authority.setId(resultSet.getObject("id", UUID.class));
-                    authority.setUser(resultSet.getObject("user_id", AuthUserEntity.class));
+                    authority.setUserId(resultSet.getObject("user_id", UUID.class));
                     authority.setAuthority(resultSet.getObject("authority", Authority.class));
 
                     authAuthority.add(authority);

@@ -19,12 +19,12 @@ public class UserdataUserDaoJdbc implements UserdataUserDao {
     @Override
     public UserEntity create(UserEntity user) {
         try (PreparedStatement statement = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
-                "INSERT INTO user (username, currency, firstname, surname, photo, photo_small, full_name) " +
+                "INSERT INTO \"user\" (username, currency, firstname, surname, photo, photo_small, full_name) " +
                         "VALUES (?,?,?,?,?,?,?)",
                 Statement.RETURN_GENERATED_KEYS
         )) {
             statement.setString(1, user.getUsername());
-            statement.setObject(2, user.getCurrency());
+            statement.setObject(2, user.getCurrency().name());
             statement.setString(3, user.getFirstname());
             statement.setString(4, user.getSurname());
             statement.setBytes(5, user.getPhoto());
@@ -50,7 +50,7 @@ public class UserdataUserDaoJdbc implements UserdataUserDao {
 
     public Optional<UserEntity> findById(UUID id) {
         try (PreparedStatement statement = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
-                "SELECT * FROM user WHERE id = ?"
+                "SELECT * FROM \"user\" WHERE id = ?"
         )) {
             statement.setObject(1, id);
             statement.execute();
@@ -79,7 +79,7 @@ public class UserdataUserDaoJdbc implements UserdataUserDao {
 
     public Optional<UserEntity> findByUsername(UserEntity username) {
         try (PreparedStatement statement = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
-                "SELECT * FROM user WHERE username = ?"
+                "SELECT * FROM \"user\" WHERE username = ?"
         )) {
             statement.setObject(1, username);
             statement.execute();
@@ -108,7 +108,7 @@ public class UserdataUserDaoJdbc implements UserdataUserDao {
 
     public void delete(UserEntity user) {
         try (PreparedStatement statement = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
-                "DELETE FROM user WHERE id = ?"
+                "DELETE FROM \"user\" WHERE id = ?"
         )) {
             statement.setObject(1, user.getId());
             statement.executeUpdate();

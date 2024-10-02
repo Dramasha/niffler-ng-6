@@ -8,7 +8,6 @@ import guru.qa.niffler.data.tpl.DataSources;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
@@ -28,7 +27,7 @@ public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
 
                     @Override
                     public void setValues(PreparedStatement ps, int i) throws SQLException {
-                        ps.setObject(1, authAuthority[i].getId());
+                        ps.setObject(1, authAuthority[i].getUserId());
                         ps.setString(2, authAuthority[i].getAuthority().name());
 
                     }

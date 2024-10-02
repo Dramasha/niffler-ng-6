@@ -1,9 +1,7 @@
 package guru.qa.niffler.service;
 
 import guru.qa.niffler.config.Config;
-import guru.qa.niffler.data.dao.AuthAuthorityDao;
-import guru.qa.niffler.data.dao.AuthUserDao;
-import guru.qa.niffler.data.dao.UserdataUserDao;
+import guru.qa.niffler.data.dao.*;
 import guru.qa.niffler.data.dao.impl.*;
 import guru.qa.niffler.data.entity.auth.AuthAuthorityEntity;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
@@ -24,9 +22,14 @@ public class UsersDbClient {
     private static final Config CFG = Config.getInstance();
     private static final PasswordEncoder pe = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
-    private final AuthUserDao authUserDao = new AuthUserDaoSpringJdbc();
-    private final AuthAuthorityDao authAuthorityDao = new AuthAuthorityDaoSpringJdbc();
-    private final UserdataUserDao userdataUserDao = new UserdataUserDaoSpringJdbc();
+    private final AuthAuthorityDao authAuthorityDaoSpring = new AuthAuthorityDaoSpringJdbc();
+    private final AuthAuthorityDao authAuthorityDao = new AuthAuthorityDaoJdbc();
+
+    private final AuthUserDao authUserDaoSpring = new AuthUserDaoSpringJdbc();
+    private final AuthUserDao authUserDao = new AuthUserDaoJdbc();
+
+    private final UserdataUserDao userdataUserDaoSpring = new UserdataUserDaoSpringJdbc();
+    private final UserdataUserDao userdataUserDao = new UserdataUserDaoJdbc();
 
     private final TransactionTemplate txTemplate = new TransactionTemplate(
             new JdbcTransactionManager(
@@ -38,6 +41,36 @@ public class UsersDbClient {
             CFG.authJdbcUrl(),
             CFG.userdataJdbcUrl()
     );
+
+    public UserJson createUser(UserJson user) {
+        return txTemplate.execute(status -> {
+                    AuthUserEntity authUser = new AuthUserEntity();
+                    authUser.setUsername(user.username());
+                    authUser.setPassword(pe.encode("12345"));
+                    authUser.setEnabled(true);
+                    authUser.setAccountNonExpired(true);
+                    authUser.setAccountNonLocked(true);
+                    authUser.setCredentialsNonExpired(true);
+
+                    AuthUserEntity createdAuthUser = authUserDao.create(authUser);
+
+                    AuthAuthorityEntity[] authorityEntities = Arrays.stream(Authority.values()).map(
+                            e -> {
+                                AuthAuthorityEntity ae = new AuthAuthorityEntity();
+                                ae.setUserId(createdAuthUser.getId());
+                                ae.setAuthority(e);
+                                return ae;
+                            }
+                    ).toArray(AuthAuthorityEntity[]::new);
+
+                    authAuthorityDao.create(authorityEntities);
+                    return UserJson.fromEntity(
+                            userdataUserDaoSpring.create(UserEntity.fromJson(user))
+                    );
+                }
+        );
+    }
+
 
     public UserJson createUserSpringJdbc(UserJson user) {
         return xaTxTemplate.execute(() -> {
@@ -54,7 +87,7 @@ public class UsersDbClient {
                     AuthAuthorityEntity[] authAuthority = Arrays.stream(Authority.values()).map(
                             e -> {
                                 AuthAuthorityEntity ae = new AuthAuthorityEntity();
-                                ae.setId(createdAuthUser.getId());
+                                ae.setUserId(createdAuthUser.getId());
                                 ae.setAuthority(e);
                                 return ae;
                             }
@@ -65,6 +98,87 @@ public class UsersDbClient {
                             userdataUserDao.create(UserEntity.fromJson(user))
                     );
                 }
+        );
+    }
+
+    public UserJson createUserWithoutSpringJdbcTransaction(UserJson user) {
+        AuthUserEntity authUser = new AuthUserEntity();
+        authUser.setUsername(user.username());
+        authUser.setPassword(pe.encode("12345"));
+        authUser.setEnabled(true);
+        authUser.setAccountNonExpired(true);
+        authUser.setAccountNonLocked(true);
+        authUser.setCredentialsNonExpired(true);
+
+        AuthUserEntity createdAuthUser = authUserDao.create(authUser);
+
+        AuthAuthorityEntity[] authorityEntities = Arrays.stream(Authority.values()).map(
+                e -> {
+                    AuthAuthorityEntity ae = new AuthAuthorityEntity();
+                    ae.setUserId(createdAuthUser.getId());
+                    ae.setAuthority(e);
+                    return ae;
+                }
+        ).toArray(AuthAuthorityEntity[]::new);
+
+        authAuthorityDao.create(authorityEntities);
+        return UserJson.fromEntity(
+                userdataUserDao.create(UserEntity.fromJson(user))
+        );
+    }
+
+    public UserJson createUserJdbcTransaction(UserJson user) {
+        return txTemplate.execute(status -> {
+                    AuthUserEntity authUser = new AuthUserEntity();
+                    authUser.setUsername(user.username());
+                    authUser.setPassword(pe.encode("12345"));
+                    authUser.setEnabled(true);
+                    authUser.setAccountNonExpired(true);
+                    authUser.setAccountNonLocked(true);
+                    authUser.setCredentialsNonExpired(true);
+
+                    AuthUserEntity createdAuthUser = authUserDaoSpring.create(authUser);
+
+                    AuthAuthorityEntity[] authorityEntities = Arrays.stream(Authority.values()).map(
+                            e -> {
+                                AuthAuthorityEntity ae = new AuthAuthorityEntity();
+                                ae.setUserId(createdAuthUser.getId());
+                                ae.setAuthority(e);
+                                return ae;
+                            }
+                    ).toArray(AuthAuthorityEntity[]::new);
+
+                    authAuthorityDaoSpring.create(authorityEntities);
+                    return UserJson.fromEntity(
+                            userdataUserDaoSpring.create(UserEntity.fromJson(user))
+                    );
+                }
+        );
+    }
+
+    public UserJson createUserWithoutJdbcTransaction(UserJson user) {
+        AuthUserEntity authUser = new AuthUserEntity();
+        authUser.setUsername(user.username());
+        authUser.setPassword(pe.encode("12345"));
+        authUser.setEnabled(true);
+        authUser.setAccountNonExpired(true);
+        authUser.setAccountNonLocked(true);
+        authUser.setCredentialsNonExpired(true);
+
+        AuthUserEntity createdAuthUser = authUserDaoSpring.create(authUser);
+
+        AuthAuthorityEntity[] authorityEntities = Arrays.stream(Authority.values()).map(
+                e -> {
+                    AuthAuthorityEntity ae = new AuthAuthorityEntity();
+                    ae.setUserId(createdAuthUser.getId());
+                    ae.setAuthority(e);
+                    return ae;
+                }
+        ).toArray(AuthAuthorityEntity[]::new);
+
+        authAuthorityDaoSpring.create(authorityEntities);
+        return UserJson.fromEntity(
+                userdataUserDaoSpring.create(UserEntity.fromJson(user))
         );
     }
 }
