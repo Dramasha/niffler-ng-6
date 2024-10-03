@@ -1,11 +1,14 @@
-package guru.qa.niffler.data.dao.impl;
+package guru.qa.niffler.data.repository.impl;
 
 import guru.qa.niffler.config.Config;
-import guru.qa.niffler.data.dao.UserdataUserDao;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
+import guru.qa.niffler.data.repository.UserdataUserRepository;
 import guru.qa.niffler.model.CurrencyValues;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -13,15 +16,16 @@ import java.util.UUID;
 
 import static guru.qa.niffler.data.tpl.Connections.holder;
 
-public class UserdataUserDaoJdbc implements UserdataUserDao {
+public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
     private static final Config CFG = Config.getInstance();
 
     @Override
     public UserEntity create(UserEntity user) {
         try (PreparedStatement statement = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
                 "INSERT INTO \"user\" (username, currency, firstname, surname, photo, photo_small, full_name) " +
-                        "VALUES (?,?,?,?,?,?,?)",
-                Statement.RETURN_GENERATED_KEYS
+                        "VALUES (?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+             PreparedStatement friendship = holder(CFG.authJdbcUrl()).connection().prepareStatement(
+                     "INSERT INTO friendship (requester_id, addressee_id, status, created_date) VALUES (?, ?)"
         )) {
             statement.setString(1, user.getUsername());
             statement.setObject(2, user.getCurrency().name());
