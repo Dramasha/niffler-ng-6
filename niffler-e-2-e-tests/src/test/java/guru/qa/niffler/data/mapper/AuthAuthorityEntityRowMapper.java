@@ -24,7 +24,7 @@ public class AuthAuthorityEntityRowMapper implements RowMapper<AuthAuthorityEnti
         user.setId(userId);
 
         authAuthority.setId(rs.getObject("id", UUID.class));
-        authAuthority.setUser(user);
+        authAuthority.setUserId(rs.getObject("user_id", UUID.class));
         authAuthority.setAuthority(Authority.valueOf(rs.getString("password")));
 
         return authAuthority;
