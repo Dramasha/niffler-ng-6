@@ -3,8 +3,8 @@ package guru.qa.niffler.service;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.*;
 import guru.qa.niffler.data.dao.impl.*;
-import guru.qa.niffler.data.entity.auth.AuthAuthorityEntity;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
+import guru.qa.niffler.data.entity.auth.AuthorityEntity;
 import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.data.entity.user.UserEntity;
 import guru.qa.niffler.data.tpl.DataSources;
@@ -54,18 +54,19 @@ public class UsersDbClient {
 
                     AuthUserEntity createdAuthUser = authUserDao.create(authUser);
 
-                    AuthAuthorityEntity[] authorityEntities = Arrays.stream(Authority.values()).map(
+                    AuthorityEntity[] authorityEntities = Arrays.stream(Authority.values()).map(
                             e -> {
-                                AuthAuthorityEntity ae = new AuthAuthorityEntity();
-                                ae.setUserId(createdAuthUser.getId());
+                                AuthorityEntity ae = new AuthorityEntity();
+                                ae.setUser(createdAuthUser);
                                 ae.setAuthority(e);
                                 return ae;
                             }
-                    ).toArray(AuthAuthorityEntity[]::new);
+                    ).toArray(AuthorityEntity[]::new);
 
                     authAuthorityDao.create(authorityEntities);
                     return UserJson.fromEntity(
-                            userdataUserDaoSpring.create(UserEntity.fromJson(user))
+                            userdataUserDaoSpring.create(UserEntity.fromJson(user)),
+                            null
                     );
                 }
         );
@@ -84,18 +85,19 @@ public class UsersDbClient {
 
                     AuthUserEntity createdAuthUser = authUserDao.create(authUser);
 
-                    AuthAuthorityEntity[] authAuthority = Arrays.stream(Authority.values()).map(
+                    AuthorityEntity[] authAuthority = Arrays.stream(Authority.values()).map(
                             e -> {
-                                AuthAuthorityEntity ae = new AuthAuthorityEntity();
-                                ae.setUserId(createdAuthUser.getId());
+                                AuthorityEntity ae = new AuthorityEntity();
+                                ae.setUser(createdAuthUser);
                                 ae.setAuthority(e);
                                 return ae;
                             }
-                    ).toArray(AuthAuthorityEntity[]::new);
+                    ).toArray(AuthorityEntity[]::new);
 
                     authAuthorityDao.create(authAuthority);
                     return UserJson.fromEntity(
-                            userdataUserDao.create(UserEntity.fromJson(user))
+                            userdataUserDao.create(UserEntity.fromJson(user)),
+                            null
                     );
                 }
         );
@@ -112,18 +114,19 @@ public class UsersDbClient {
 
         AuthUserEntity createdAuthUser = authUserDao.create(authUser);
 
-        AuthAuthorityEntity[] authorityEntities = Arrays.stream(Authority.values()).map(
+        AuthorityEntity[] authorityEntities = Arrays.stream(Authority.values()).map(
                 e -> {
-                    AuthAuthorityEntity ae = new AuthAuthorityEntity();
-                    ae.setUserId(createdAuthUser.getId());
+                    AuthorityEntity ae = new AuthorityEntity();
+                    ae.setUser(createdAuthUser);
                     ae.setAuthority(e);
                     return ae;
                 }
-        ).toArray(AuthAuthorityEntity[]::new);
+        ).toArray(AuthorityEntity[]::new);
 
         authAuthorityDao.create(authorityEntities);
         return UserJson.fromEntity(
-                userdataUserDao.create(UserEntity.fromJson(user))
+                userdataUserDao.create(UserEntity.fromJson(user)),
+                null
         );
     }
 
@@ -139,18 +142,19 @@ public class UsersDbClient {
 
                     AuthUserEntity createdAuthUser = authUserDaoSpring.create(authUser);
 
-                    AuthAuthorityEntity[] authorityEntities = Arrays.stream(Authority.values()).map(
+                    AuthorityEntity[] authorityEntities = Arrays.stream(Authority.values()).map(
                             e -> {
-                                AuthAuthorityEntity ae = new AuthAuthorityEntity();
-                                ae.setUserId(createdAuthUser.getId());
+                                AuthorityEntity ae = new AuthorityEntity();
+                                ae.setUser(createdAuthUser);
                                 ae.setAuthority(e);
                                 return ae;
                             }
-                    ).toArray(AuthAuthorityEntity[]::new);
+                    ).toArray(AuthorityEntity[]::new);
 
                     authAuthorityDaoSpring.create(authorityEntities);
                     return UserJson.fromEntity(
-                            userdataUserDaoSpring.create(UserEntity.fromJson(user))
+                            userdataUserDaoSpring.create(UserEntity.fromJson(user)),
+                            null
                     );
                 }
         );
@@ -167,18 +171,19 @@ public class UsersDbClient {
 
         AuthUserEntity createdAuthUser = authUserDaoSpring.create(authUser);
 
-        AuthAuthorityEntity[] authorityEntities = Arrays.stream(Authority.values()).map(
+        AuthorityEntity[] authorityEntities = Arrays.stream(Authority.values()).map(
                 e -> {
-                    AuthAuthorityEntity ae = new AuthAuthorityEntity();
-                    ae.setUserId(createdAuthUser.getId());
+                    AuthorityEntity ae = new AuthorityEntity();
+                    ae.setUser(createdAuthUser);
                     ae.setAuthority(e);
                     return ae;
                 }
-        ).toArray(AuthAuthorityEntity[]::new);
+        ).toArray(AuthorityEntity[]::new);
 
         authAuthorityDaoSpring.create(authorityEntities);
         return UserJson.fromEntity(
-                userdataUserDaoSpring.create(UserEntity.fromJson(user))
+                userdataUserDaoSpring.create(UserEntity.fromJson(user)),
+                null
         );
     }
 }

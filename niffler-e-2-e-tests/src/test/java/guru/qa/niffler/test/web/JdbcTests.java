@@ -14,11 +14,12 @@ public class JdbcTests {
         UserJson user = usersDbClient.createUser(
                 new UserJson(
                         null,
-                        "testUserForSpring",
+                        "testUserForSpring1",
                         null,
                         null,
                         null,
                         CurrencyValues.RUB,
+                        null,
                         null,
                         null
                 )
@@ -38,6 +39,7 @@ public class JdbcTests {
                         null,
                         CurrencyValues.RUB,
                         null,
+                        null,
                         null
                 )
         );
@@ -56,6 +58,7 @@ public class JdbcTests {
                         null,
                         CurrencyValues.RUB,
                         null,
+                        null,
                         null
                 )
         );
@@ -73,6 +76,7 @@ public class JdbcTests {
                         null,
                         null,
                         CurrencyValues.RUB,
+                        null,
                         null,
                         null
                 )
