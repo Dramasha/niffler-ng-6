@@ -2,7 +2,7 @@ package guru.qa.niffler.data.dao.impl;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.AuthAuthorityDao;
-import guru.qa.niffler.data.entity.auth.AuthAuthorityEntity;
+import guru.qa.niffler.data.entity.auth.AuthorityEntity;
 import guru.qa.niffler.data.mapper.AuthAuthorityEntityRowMapper;
 import guru.qa.niffler.data.tpl.DataSources;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -19,7 +19,7 @@ public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
     private static final Config CFG = Config.getInstance();
 
     @Override
-    public void create(AuthAuthorityEntity... authAuthority) {
+    public void create(AuthorityEntity... authAuthority) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.getDataSource(CFG.authJdbcUrl()));
         jdbcTemplate.batchUpdate(
                 "INSERT INTO authority (user_id, authority) VALUES (?,?)",
@@ -27,7 +27,7 @@ public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
 
                     @Override
                     public void setValues(PreparedStatement ps, int i) throws SQLException {
-                        ps.setObject(1, authAuthority[i].getUserId());
+                        ps.setObject(1, authAuthority[i].getUser().getId());
                         ps.setString(2, authAuthority[i].getAuthority().name());
 
                     }
@@ -41,7 +41,7 @@ public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
     }
 
     @Override
-    public Optional<AuthAuthorityEntity> findById(UUID id) {
+    public Optional<AuthorityEntity> findById(UUID id) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.getDataSource(CFG.authJdbcUrl()));
         return Optional.ofNullable(
                 jdbcTemplate.queryForObject(
@@ -53,7 +53,7 @@ public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
     }
 
     @Override
-    public Optional<AuthAuthorityEntity> findByUserId(UUID userId) {
+    public Optional<AuthorityEntity> findByUserId(UUID userId) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.getDataSource(CFG.authJdbcUrl()));
         return Optional.ofNullable(
                 jdbcTemplate.queryForObject(
@@ -65,7 +65,7 @@ public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
     }
 
     @Override
-    public void delete(AuthAuthorityEntity authAuthority) {
+    public void delete(AuthorityEntity authAuthority) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.getDataSource(CFG.authJdbcUrl()));
         jdbcTemplate.update(
                 "DELETE FROM authority WHERE id = ?",
@@ -74,7 +74,7 @@ public class AuthAuthorityDaoSpringJdbc implements AuthAuthorityDao {
     }
 
     @Override
-    public List<AuthAuthorityEntity> findAll() {
+    public List<AuthorityEntity> findAll() {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSources.getDataSource(CFG.authJdbcUrl()));
         return jdbcTemplate.query(
                 "SELECT * FROM authority",

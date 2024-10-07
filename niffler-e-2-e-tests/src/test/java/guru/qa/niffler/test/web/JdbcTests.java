@@ -8,17 +8,35 @@ import org.junit.jupiter.api.Test;
 import static guru.qa.niffler.utils.RandomDataUtils.getRandomUsername;
 
 public class JdbcTests {
+
+
+    @Test
+    void createUserWithRepo() {
+        UsersDbClient usersDbClient = new UsersDbClient();
+        UserJson userMyself = usersDbClient.generateUser("myself1");
+        UserJson userFriend = usersDbClient.generateUser("friend1");
+        UserJson userIncome = usersDbClient.generateUser("income1");
+        UserJson userOutcome = usersDbClient.generateUser("outcome1");
+
+
+        usersDbClient.addIncomeInvitation(userIncome, userMyself);
+        usersDbClient.addOutcomeInvitation(userMyself, userOutcome);
+        usersDbClient.addFriend(userMyself, userFriend);
+
+    }
+
     @Test
     void springJdbcTest() {
         UsersDbClient usersDbClient = new UsersDbClient();
         UserJson user = usersDbClient.createUser(
                 new UserJson(
                         null,
-                        "testUserForSpring",
+                        "testUserForSpring888",
                         null,
                         null,
                         null,
                         CurrencyValues.RUB,
+                        null,
                         null,
                         null
                 )
@@ -38,6 +56,7 @@ public class JdbcTests {
                         null,
                         CurrencyValues.RUB,
                         null,
+                        null,
                         null
                 )
         );
@@ -56,6 +75,7 @@ public class JdbcTests {
                         null,
                         CurrencyValues.RUB,
                         null,
+                        null,
                         null
                 )
         );
@@ -73,6 +93,7 @@ public class JdbcTests {
                         null,
                         null,
                         CurrencyValues.RUB,
+                        null,
                         null,
                         null
                 )

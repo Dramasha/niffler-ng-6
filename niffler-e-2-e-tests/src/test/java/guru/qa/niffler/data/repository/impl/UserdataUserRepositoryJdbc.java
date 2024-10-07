@@ -1,8 +1,9 @@
-package guru.qa.niffler.data.dao.impl;
+package guru.qa.niffler.data.repository.impl;
 
 import guru.qa.niffler.config.Config;
-import guru.qa.niffler.data.dao.UserdataUserDao;
+import guru.qa.niffler.data.entity.userdata.FriendshipStatus;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
+import guru.qa.niffler.data.repository.UserdataUserRepository;
 import guru.qa.niffler.model.CurrencyValues;
 
 import java.sql.*;
@@ -13,16 +14,15 @@ import java.util.UUID;
 
 import static guru.qa.niffler.data.tpl.Connections.holder;
 
-public class UserdataUserDaoJdbc implements UserdataUserDao {
+public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
     private static final Config CFG = Config.getInstance();
 
     @Override
     public UserEntity create(UserEntity user) {
         try (PreparedStatement statement = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
                 "INSERT INTO \"user\" (username, currency, firstname, surname, photo, photo_small, full_name) " +
-                        "VALUES (?,?,?,?,?,?,?)",
-                Statement.RETURN_GENERATED_KEYS
-        )) {
+                        "VALUES (?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS)
+        ) {
             statement.setString(1, user.getUsername());
             statement.setObject(2, user.getCurrency().name());
             statement.setString(3, user.getFirstname());
@@ -143,5 +143,63 @@ public class UserdataUserDaoJdbc implements UserdataUserDao {
             throw new RuntimeException(e);
         }
         return users;
+    }
+
+
+    public void addIncomeInvitation(UserEntity requester, UserEntity addressee) {
+        try (PreparedStatement statement = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
+                "INSERT INTO friendship (requester_id, addressee_id, status, created_date) VALUES (?,?,?,?)"
+        )) {
+            statement.setObject(1, requester.getId());
+            statement.setObject(2, addressee.getId());
+            statement.setString(3, FriendshipStatus.PENDING.name());
+            statement.setDate(4, new java.sql.Date(System.currentTimeMillis()));
+
+            statement.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void addOutcomeInvitation(UserEntity addressee, UserEntity requester) {
+        try (PreparedStatement statement = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
+                "INSERT INTO friendship (requester_id, addressee_id, status, created_date) VALUES (?,?,?,?)"
+        )) {
+            statement.setObject(1, addressee.getId());
+            statement.setObject(2, requester.getId());
+            statement.setString(3, FriendshipStatus.PENDING.name());
+            statement.setDate(4, new java.sql.Date(System.currentTimeMillis()));
+
+            statement.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void addFriend(UserEntity requester, UserEntity addressee) {
+        try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
+                "INSERT INTO friendship  (requester_id, addressee_id, created_date, status) " +
+                        "VALUES (?, ?, ?, ?)"
+        )) {
+
+            ps.setObject(1, requester.getId());
+            ps.setObject(2, addressee.getId());
+            ps.setDate(3, new java.sql.Date(System.currentTimeMillis()));
+            ps.setString(4, FriendshipStatus.ACCEPTED.name());
+            ps.addBatch();
+
+            ps.setObject(1, addressee.getId());
+            ps.setObject(2, requester.getId());
+            ps.setDate(3, new java.sql.Date(System.currentTimeMillis()));
+            ps.setString(4, FriendshipStatus.ACCEPTED.name());
+            ps.addBatch();
+
+            ps.executeBatch();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
