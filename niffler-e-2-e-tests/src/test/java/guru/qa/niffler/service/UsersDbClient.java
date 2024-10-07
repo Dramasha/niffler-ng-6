@@ -8,9 +8,12 @@ import guru.qa.niffler.data.entity.auth.AuthorityEntity;
 import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
 import guru.qa.niffler.data.repository.AuthUserRepository;
+import guru.qa.niffler.data.repository.UserdataUserRepository;
 import guru.qa.niffler.data.repository.impl.AuthUserRepositoryJdbc;
+import guru.qa.niffler.data.repository.impl.UserdataUserRepositoryJdbc;
 import guru.qa.niffler.data.tpl.DataSources;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
+import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.UserJson;
 import org.springframework.jdbc.support.JdbcTransactionManager;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -30,6 +33,8 @@ public class UsersDbClient {
 
     private final UserdataUserDao userdataUserDaoSpring = new UserdataUserDaoSpringJdbc();
     private final UserdataUserDao userdataUserDao = new UserdataUserDaoJdbc();
+
+    private final UserdataUserRepository userdataUserRepository = new UserdataUserRepositoryJdbc();
 
     private final TransactionTemplate txTemplate = new TransactionTemplate(
             new JdbcTransactionManager(
@@ -138,19 +143,18 @@ public class UsersDbClient {
                     authUser.setAccountNonExpired(true);
                     authUser.setAccountNonLocked(true);
                     authUser.setCredentialsNonExpired(true);
-            authUser.setAuthorities(
-                    Arrays.stream(Authority.values()).map(
-                            e -> {
-                                AuthorityEntity ae = new AuthorityEntity();
-                                ae.setUser(authUser);
-                                ae.setAuthority(e);
-                                return ae;
-                            }
-                    ).toList()
-            );
+                    authUser.setAuthorities(
+                            Arrays.stream(Authority.values()).map(
+                                    e -> {
+                                        AuthorityEntity ae = new AuthorityEntity();
+                                        ae.setUser(authUser);
+                                        ae.setAuthority(e);
+                                        return ae;
+                                    }
+                            ).toList()
+                    );
 
-            authUserDaoSpring.create(authUser);
-
+                    authUserDaoSpring.create(authUser);
 
 
                     return UserJson.fromEntity(
@@ -187,4 +191,50 @@ public class UsersDbClient {
                 null
         );
     }
+
+    public void addIncomeInvitation(UserJson requester, UserJson addressee) {
+        xaTxTemplate.execute(() -> {
+            userdataUserRepository.addIncomeInvitation(
+                    UserEntity.fromJson(requester),
+                    UserEntity.fromJson(addressee)
+            );
+            return null;
+        });
+    }
+
+    public void addOutcomeInvitation(UserJson requester, UserJson addressee) {
+        xaTxTemplate.execute(() -> {
+            userdataUserRepository.addOutcomeInvitation(
+                    UserEntity.fromJson(requester),
+                    UserEntity.fromJson(addressee)
+            );
+            return null;
+        });
+    }
+
+    public void addFriend(UserJson requester, UserJson addressee) {
+        xaTxTemplate.execute(() -> {
+            userdataUserRepository.addFriend(
+                    UserEntity.fromJson(requester),
+                    UserEntity.fromJson(addressee)
+            );
+            return null;
+        });
+    }
+
+    public UserJson generateUser(String name) {
+        return createUser(new UserJson(
+                        null,
+                        name,
+                        null,
+                        null,
+                        null,
+                        CurrencyValues.RUB,
+                        null,
+                        null,
+                        null
+                )
+        );
+    }
+
 }
