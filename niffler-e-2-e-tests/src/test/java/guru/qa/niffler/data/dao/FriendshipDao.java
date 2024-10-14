@@ -9,9 +9,9 @@ import java.util.UUID;
 public interface FriendshipDao {
     void create(FriendshipEntity friendship);
 
-    Optional<FriendshipEntity> findByRequesterId(UUID requesterId);
+    Optional<List<FriendshipEntity>> findByRequesterId(UUID requesterId);
 
-    Optional<FriendshipEntity> findByAddresseeId(UUID addresseeId);
+    Optional<List<FriendshipEntity>> findByAddresseeId(UUID addresseeId);
 
     List<FriendshipEntity> findAll();
 }

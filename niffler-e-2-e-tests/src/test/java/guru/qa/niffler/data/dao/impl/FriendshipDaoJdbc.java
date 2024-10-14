@@ -40,7 +40,8 @@ public class FriendshipDaoJdbc implements FriendshipDao {
     }
 
     @Override
-    public Optional<FriendshipEntity> findByRequesterId(UUID requesterId) {
+    public Optional<List<FriendshipEntity>> findByRequesterId(UUID requesterId) {
+        List<FriendshipEntity> friendships = new ArrayList<>();
         try (PreparedStatement statement = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
                 "SELECT * FROM friendship WHERE requester_id = ?"
         )) {
@@ -54,44 +55,38 @@ public class FriendshipDaoJdbc implements FriendshipDao {
                     friendship.setAddressee(resultSet.getObject("addressee_id", UserEntity.class));
                     friendship.setStatus(resultSet.getObject("status", FriendshipStatus.class));
                     friendship.setCreatedDate(resultSet.getDate("created_date"));
-
-
-                    return Optional.of(friendship);
-                } else {
-                    return Optional.empty();
+                    friendships.add(friendship);
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        return friendships.isEmpty() ? Optional.empty() : Optional.of(friendships);
     }
 
     @Override
-    public Optional<FriendshipEntity> findByAddresseeId(UUID addresseeId) {
+    public Optional<List<FriendshipEntity>> findByAddresseeId(UUID addresseeId) {
+        List<FriendshipEntity> friendships = new ArrayList<>();
         try (PreparedStatement statement = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
                 "SELECT * FROM friendship WHERE addressee_id = ?"
         )) {
             statement.setObject(1, addresseeId);
-            statement.execute();
-            try (ResultSet resultSet = statement.getResultSet()) {
-                if (resultSet.next()) {
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
                     FriendshipEntity friendship = new FriendshipEntity();
-
                     friendship.setRequester(resultSet.getObject("requester_id", UserEntity.class));
                     friendship.setAddressee(resultSet.getObject("addressee_id", UserEntity.class));
                     friendship.setStatus(resultSet.getObject("status", FriendshipStatus.class));
                     friendship.setCreatedDate(resultSet.getDate("created_date"));
-
-
-                    return Optional.of(friendship);
-                } else {
-                    return Optional.empty();
+                    friendships.add(friendship);
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        return friendships.isEmpty() ? Optional.empty() : Optional.of(friendships);
     }
+
 
     @Override
     public List<FriendshipEntity> findAll() {
