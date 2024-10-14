@@ -194,7 +194,7 @@ public class UsersDbClient {
 
     public void addIncomeInvitation(UserJson requester, UserJson addressee) {
         xaTxTemplate.execute(() -> {
-            userdataUserRepository.addIncomeInvitation(
+            userdataUserRepository.addInvitation(
                     UserEntity.fromJson(requester),
                     UserEntity.fromJson(addressee)
             );
@@ -204,9 +204,9 @@ public class UsersDbClient {
 
     public void addOutcomeInvitation(UserJson requester, UserJson addressee) {
         xaTxTemplate.execute(() -> {
-            userdataUserRepository.addOutcomeInvitation(
-                    UserEntity.fromJson(requester),
-                    UserEntity.fromJson(addressee)
+            userdataUserRepository.addInvitation(
+                    UserEntity.fromJson(addressee),
+                    UserEntity.fromJson(requester)
             );
             return null;
         });

@@ -146,7 +146,7 @@ public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
     }
 
 
-    public void addIncomeInvitation(UserEntity requester, UserEntity addressee) {
+    public void addInvitation(UserEntity requester, UserEntity addressee) {
         try (PreparedStatement statement = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
                 "INSERT INTO friendship (requester_id, addressee_id, status, created_date) VALUES (?,?,?,?)"
         )) {
