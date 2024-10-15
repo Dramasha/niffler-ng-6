@@ -51,17 +51,17 @@ public class UsersDbClient {
             CFG.userdataJdbcUrl()
     );
 
-//    public UserJson createUser(UserJson user) {
-//        return txTemplate.execute(status -> {
-//            AuthUserEntity authUser = authUserEntity(user);
-//            authUserRepository.create(authUser);
-//                    return UserJson.fromEntity(
-//                            userdataUser.create(UserEntity.fromJson(user)),
-//                            null
-//                    );
-//                }
-//        );
-//    }
+    public UserJson createUser(String username, String password) {
+        return txTemplate.execute(status -> {
+            AuthUserEntity authUser = authUserEntity(username, password);
+            authUserRepository.create(authUser);
+                    return UserJson.fromEntity(
+                            userdataUser.create(userEntity(username)),
+                            null
+                    );
+                }
+        );
+    }
 
 
     public UserJson createUserSpringJdbc(String username, String password) {
@@ -105,43 +105,44 @@ public class UsersDbClient {
         return authUser;
     }
 
-//
-//    public UserJson createUserWithoutSpringJdbcTransaction(UserJson user) {
-//        AuthUserEntity authUser = authUserEntity(user);
-//
-//        authUserRepository.create(authUser);
-//
-//        return UserJson.fromEntity(
-//                userdataUserDao.create(UserEntity.fromJson(user)),
-//                null
-//        );
-//    }
-//
-//    public UserJson createUserJdbcTransaction(UserJson user) {
-//        return txTemplate.execute(status -> {
-//            AuthUserEntity authUser = authUserEntity(user);
-//
-//            authUserDaoSpring.create(authUser);
-//
-//
-//                    return UserJson.fromEntity(
-//                            userdataUser.create(UserEntity.fromJson(user)),
-//                            null
-//                    );
-//                }
-//        );
-//    }
-//
-//    public UserJson createUserWithoutJdbcTransaction(UserJson user) {
-//        AuthUserEntity authUser = authUserEntity(user);
-//
-//        authUserDaoSpring.create(authUser);
-//
-//        return UserJson.fromEntity(
-//                userdataUser.create(UserEntity.fromJson(user)),
-//                null
-//        );
-//    }
+
+    public UserJson createUserWithoutSpringJdbcTransaction(String username, String password) {
+        AuthUserEntity authUser = authUserEntity(username, password);
+
+        authUserRepository.create(authUser);
+
+        return UserJson.fromEntity(
+                userdataUserDao.create(userEntity(username)),
+                null
+        );
+    }
+
+    public UserJson createUserJdbcTransaction(String username, String password) {
+        return txTemplate.execute(status -> {
+            AuthUserEntity authUser = authUserEntity(username, password);
+
+
+            authUserDaoSpring.create(authUser);
+
+
+                    return UserJson.fromEntity(
+                            userdataUser.create(userEntity(username)),
+                            null
+                    );
+                }
+        );
+    }
+
+    public UserJson createUserWithoutJdbcTransaction(String username, String password) {
+        AuthUserEntity authUser = authUserEntity(username, password);
+
+        authUserDaoSpring.create(authUser);
+
+        return UserJson.fromEntity(
+                userdataUser.create(userEntity(username)),
+                null
+        );
+    }
 
     public void addIncomeInvitation(UserJson requester, UserJson addressee) {
         xaTxTemplate.execute(() -> {
@@ -172,20 +173,4 @@ public class UsersDbClient {
             return null;
         });
     }
-//
-//    public UserJson generateUser(String name) {
-//        return createUser(new UserJson(
-//                        null,
-//                        name,
-//                        null,
-//                        null,
-//                        null,
-//                        CurrencyValues.RUB,
-//                        null,
-//                        null,
-//                        null
-//                )
-//        );
-//    }
-
 }
