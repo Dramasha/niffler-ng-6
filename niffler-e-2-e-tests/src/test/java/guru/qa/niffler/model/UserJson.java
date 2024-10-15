@@ -26,7 +26,8 @@ public record UserJson(
         @JsonProperty("photoSmall")
         String photoSmall,
         @JsonProperty("friendState")
-        FriendState friendState) {
+        FriendState friendState
+) {
 
     public static UserJson fromEntity(UserEntity entity, FriendState friendState) {
         return new UserJson(

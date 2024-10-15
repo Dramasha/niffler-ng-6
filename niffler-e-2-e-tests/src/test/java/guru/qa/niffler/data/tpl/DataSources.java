@@ -38,8 +38,6 @@ public class DataSources {
                     } catch (NamingException e) {
                         throw new RuntimeException(e);
                     }
-
-
                     return dsBean;
                 }
         );

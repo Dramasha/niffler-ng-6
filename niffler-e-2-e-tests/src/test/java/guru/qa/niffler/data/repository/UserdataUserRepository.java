@@ -11,7 +11,7 @@ public interface UserdataUserRepository {
 
     Optional<UserEntity> findById(UUID id);
 
-    Optional<UserEntity> findByUsername(UserEntity username);
+    Optional<UserEntity> findByUsername(String username);
 
     void delete(UserEntity user);
 

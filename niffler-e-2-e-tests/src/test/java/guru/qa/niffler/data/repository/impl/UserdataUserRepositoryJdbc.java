@@ -77,7 +77,7 @@ public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
         }
     }
 
-    public Optional<UserEntity> findByUsername(UserEntity username) {
+    public Optional<UserEntity> findByUsername(String username) {
         try (PreparedStatement statement = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
                 "SELECT * FROM \"user\" WHERE username = ?"
         )) {
