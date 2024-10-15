@@ -5,12 +5,10 @@ import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;
-import guru.qa.niffler.service.SpendDbClient;
+import guru.qa.niffler.service.impl.SpendDbClient;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Date;
 
 public class SpendingExtension implements BeforeEachCallback, ParameterResolver {
@@ -39,14 +37,10 @@ public class SpendingExtension implements BeforeEachCallback, ParameterResolver 
                                 spending.description(),
                                 user.username()
                         );
-                        try {
-                            context.getStore(NAMESPACE).put(
-                                    context.getUniqueId(),
-                                    spendDbClient.createSpend(spend, Connection.TRANSACTION_READ_COMMITTED)
-                            );
-                        } catch (SQLException e) {
-                            throw new RuntimeException(e);
-                        }
+                        context.getStore(NAMESPACE).put(
+                                context.getUniqueId(),
+                                spendDbClient.createSpend(spend)
+                        );
                     }
                 });
     }

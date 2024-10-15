@@ -1,15 +1,12 @@
 package guru.qa.niffler.data.repository.impl;
 
 import guru.qa.niffler.config.Config;
-import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.entity.userdata.FriendshipStatus;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
-import guru.qa.niffler.data.repository.AuthUserRepository;
 import guru.qa.niffler.data.repository.UserdataUserRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -48,17 +45,20 @@ public class UserdataUserRepositoryHibernate implements UserdataUserRepository {
     }
 
     @Override
-    public void delete(UserEntity authUser) {
-
+    public void delete(UserEntity user) {
+        entityManager.joinTransaction();
+        UserEntity attachedUser = entityManager.contains(user) ? user : entityManager.merge(user);
+        entityManager.remove(attachedUser);
     }
 
     @Override
-    public List<UserEntity> findAll() {
-        return List.of();
+    public UserEntity update(UserEntity user) {
+        entityManager.joinTransaction();
+        return entityManager.merge(user);
     }
 
     @Override
-    public void addInvitation(UserEntity requester, UserEntity addressee) {
+    public void sendInvitation(UserEntity requester, UserEntity addressee) {
         entityManager.joinTransaction();
         requester.addFriends(FriendshipStatus.PENDING, addressee);
     }
