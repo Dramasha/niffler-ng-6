@@ -30,7 +30,7 @@ enum LocalConfig implements Config {
 
     @Override
     public String authUrl() {
-        return "http://127.0.0.1:9000";
+        return "http://auth.niffler.dc:9000";
     }
 
     @Override

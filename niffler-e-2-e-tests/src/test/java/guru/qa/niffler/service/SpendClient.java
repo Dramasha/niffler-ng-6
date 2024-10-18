@@ -15,7 +15,7 @@ public interface SpendClient {
 
     Optional<SpendJson> findSpendById(UUID id);
 
-    List<SpendJson> findSpendByUsernameAndDescription(String username, String description);
+    List<SpendJson> findSpendByIdAndUsername(String id, String username);
 
     void deleteSpend(SpendJson spend);
 

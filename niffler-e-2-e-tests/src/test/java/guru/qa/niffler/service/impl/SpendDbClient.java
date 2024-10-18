@@ -39,38 +39,22 @@ public class SpendDbClient implements SpendClient {
 
     @Override
     public SpendJson updateSpend(SpendJson spend) {
-        return xaTransactionTemplate.execute(() -> {
-            SpendEntity spendEntity = SpendEntity.fromJson(spend);
-            SpendEntity updatedEntity = spendRepository.update(spendEntity);
-            return SpendJson.fromEntity(updatedEntity);
-        });
+        return null;
     }
 
     @Override
     public Optional<SpendJson> findSpendById(UUID id) {
-        return xaTransactionTemplate.execute(() -> {
-            Optional<SpendEntity> optionalSpendEntity = spendRepository.findById(id);
-            return optionalSpendEntity.map(SpendJson::fromEntity);
-        });
+        return Optional.empty();
     }
 
     @Override
-    public List<SpendJson> findSpendByUsernameAndDescription(String username, String description) {
-        return xaTransactionTemplate.execute(() -> {
-            List<SpendEntity> spendEntities = spendRepository.findByUsernameAndSpendDescription(username, description);
-            return spendEntities.stream()
-                    .map(SpendJson::fromEntity)
-                    .toList();
-        });
+    public List<SpendJson> findSpendByIdAndUsername(String id, String username) {
+        return List.of();
     }
 
     @Override
     public void deleteSpend(SpendJson spend) {
-        xaTransactionTemplate.execute(() -> {
-            SpendEntity spendEntity = SpendEntity.fromJson(spend);
-            spendRepository.remove(spendEntity);
-            return null;
-        });
+
     }
 
     @Override
@@ -85,27 +69,17 @@ public class SpendDbClient implements SpendClient {
 
     @Override
     public CategoryJson updateCategory(CategoryJson category) {
-        return xaTransactionTemplate.execute(() -> {
-            CategoryEntity categoryEntity = CategoryEntity.fromJson(category);
-            CategoryEntity updatedEntity = spendRepository.updateCategory(categoryEntity);
-            return CategoryJson.fromEntity(updatedEntity);
-        });
+        return null;
     }
 
     @Override
     public Optional<CategoryJson> findCategoryById(UUID id) {
-        return xaTransactionTemplate.execute(() -> {
-            Optional<CategoryEntity> optionalCategoryEntity = spendRepository.findCategoryById(id);
-            return optionalCategoryEntity.map(CategoryJson::fromEntity);
-        });
+        return Optional.empty();
     }
 
     @Override
     public Optional<CategoryJson> findCategoryByUsernameAndCategoryName(String username, String name) {
-        return xaTransactionTemplate.execute(() -> {
-            Optional<CategoryEntity> optionalCategoryEntity = spendRepository.findCategoryByUsernameAndCategoryName(username, name);
-            return optionalCategoryEntity.map(CategoryJson::fromEntity);
-        });
+        return Optional.empty();
     }
 
     @Override
