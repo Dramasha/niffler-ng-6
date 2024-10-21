@@ -151,7 +151,6 @@ public class UserApiClient implements UsersClient, okhttp3.CookieJar {
         }
     }
 
-
     @Override
     public void saveFromResponse(@NotNull HttpUrl url, @NotNull List<Cookie> cookies) {
         cookieStore.get().addAll(cookies);

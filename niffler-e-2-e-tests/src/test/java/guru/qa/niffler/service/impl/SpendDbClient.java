@@ -87,7 +87,7 @@ public class SpendDbClient implements SpendClient {
         xaTransactionTemplate.execute(() -> {
             CategoryEntity categoryEntity = CategoryEntity.fromJson(category);
             spendRepository.removeCategory(categoryEntity);
-            return null; // Возвращаем null, так как метод ничего не возвращает
+            return null;
         });
     }
 }

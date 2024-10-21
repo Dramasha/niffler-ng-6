@@ -77,12 +77,12 @@ public class UsersDbClient implements UsersClient {
 
     @Override
     public List<UserJson> getAllUsers(String username, String searchQuery) throws IOException {
-       return null;
+        throw new UnsupportedOperationException("Get all users is not supported now");
     }
 
     @Override
     public List<UserJson> getFriends(String username, String searchQuery) throws IOException {
-        return List.of();
+        throw new UnsupportedOperationException("Get friends is not supported now");
     }
 
     @Override
@@ -109,16 +109,17 @@ public class UsersDbClient implements UsersClient {
 
     @Override
     public UserJson acceptInvitation(String username, String targetUsername) throws IOException {
-        return null;
+        throw new UnsupportedOperationException("Accept invitation is not supported now");
     }
 
     @Override
     public UserJson declineInvitation(String username, String targetUsername) throws IOException {
-        return null;
+        throw new UnsupportedOperationException("Decline invitation is not supported now");
     }
 
     @Override
     public void removeFriend(String username, String targetUsername) throws IOException {
+        throw new UnsupportedOperationException("Remove friend is not supported now");
     }
 
     private UserEntity createNewUser(String username, String password) {
