@@ -17,7 +17,20 @@ public class MainPage {
             personIcon = $("[data-testid='PersonIcon']"),
             personMenu = $("[role='menu']"),
             imageInput = $(".image__input-label"),
+            searchInput = $("[placeholder='Search']"),
+            clickSearch = $("[data-testid='SearchIcon']"),
+            allArea = $("[aria-labelledby='tableTitle']"),
             peopleTabs = $("[aria-label='People tabs']");
+
+    public void searchSpendsByName(String nameSpending) {
+        searchInput.setValue(nameSpending);
+        searchInput.shouldHave(text(nameSpending));
+        clickSearch.click();
+    }
+
+    public void checkSpendAfterSearch(String name){
+        allArea.shouldHave(text(name));
+    }
 
     public EditSpendingPage editSpending(String spendingDescription) {
         tableRows.find(text(spendingDescription)).$$("td").get(5).click();
@@ -42,7 +55,7 @@ public class MainPage {
         return new ProfilePage();
     }
 
-    public FriendsPage goToFriendsUser(){
+    public FriendsPage goToFriendsUser() {
         personIcon.click();
         personMenu.shouldBe(visible).$(byText("Friends")).click();
         peopleTabs.shouldHave(text("Friends"));
