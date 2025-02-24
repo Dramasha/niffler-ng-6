@@ -4,7 +4,6 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
-import guru.qa.niffler.data.mapper.AuthAuthorityEntityRowMapper;
 import guru.qa.niffler.data.mapper.AuthUserEntityRowMapper;
 import guru.qa.niffler.data.repository.AuthUserRepository;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -26,22 +25,20 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
     private static final PasswordEncoder pe = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
     @Override
-    public AuthUserEntity create(AuthUserEntity authUser) {
+    public AuthUserEntity create(AuthUserEntity user) {
         try (PreparedStatement userStatement = holder(CFG.authJdbcUrl()).connection().prepareStatement(
                 "INSERT INTO \"user\" (username, password, enabled, account_non_expired," +
                         "account_non_locked, credentials_non_expired) VALUES (?,?,?,?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS);
              PreparedStatement authorityStatement = holder(CFG.authJdbcUrl()).connection().prepareStatement(
                      "INSERT INTO \"authority\" (user_id, authority) VALUES (?, ?)"
              )) {
-            userStatement.setString(1, authUser.getUsername());
-            userStatement.setString(2, authUser.getPassword());
-            userStatement.setBoolean(3, authUser.getEnabled());
-            userStatement.setBoolean(4, authUser.getAccountNonExpired());
-            userStatement.setBoolean(5, authUser.getAccountNonLocked());
-            userStatement.setBoolean(6, authUser.getCredentialsNonExpired());
-
+            userStatement.setString(1, user.getUsername());
+            userStatement.setString(2, user.getPassword());
+            userStatement.setBoolean(3, user.getEnabled());
+            userStatement.setBoolean(4, user.getAccountNonExpired());
+            userStatement.setBoolean(5, user.getAccountNonLocked());
+            userStatement.setBoolean(6, user.getCredentialsNonExpired());
             userStatement.executeUpdate();
-
             final UUID generatedKey;
             try (ResultSet resultSet = userStatement.getGeneratedKeys()) {
                 if (resultSet.next()) {
@@ -50,17 +47,46 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
                     throw new SQLException("Cant find id in ResultSet");
                 }
             }
-            authUser.setId(generatedKey);
-
-            for (AuthorityEntity ae : authUser.getAuthorities()) {
+            user.setId(generatedKey);
+            for (AuthorityEntity ae : user.getAuthorities()) {
                 authorityStatement.setObject(1, generatedKey);
                 authorityStatement.setString(2, ae.getAuthority().name());
                 authorityStatement.addBatch();
                 authorityStatement.clearParameters();
             }
             authorityStatement.executeBatch();
+            return user;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-            return authUser;
+    @Override
+    public AuthUserEntity update(AuthUserEntity user) {
+        String updateUserSql = "UPDATE \"user\" SET password = ?, enabled = ?, " +
+                "account_non_expired = ?, account_non_locked = ?, credentials_non_expired = ? " +
+                "WHERE id = ?";
+        String clearAuthoritySql = "DELETE FROM \"authority\" WHERE user_id = ?";
+        String insertAuthoritySql = "INSERT INTO \"authority\" (user_id, authority) VALUES (?, ?)";
+        try (PreparedStatement updateUserPs = holder(CFG.authJdbcUrl()).connection().prepareStatement(updateUserSql);
+             PreparedStatement clearAuthorityPs = holder(CFG.authJdbcUrl()).connection().prepareStatement(clearAuthoritySql);
+             PreparedStatement authorityPs = holder(CFG.authJdbcUrl()).connection().prepareStatement(insertAuthoritySql)) {
+            clearAuthorityPs.setObject(1, user.getId());
+            clearAuthorityPs.executeUpdate();
+            for (AuthorityEntity authority : user.getAuthorities()) {
+                authorityPs.setObject(1, user.getId());
+                authorityPs.setString(2, authority.getAuthority().name());
+                authorityPs.addBatch();
+            }
+            authorityPs.executeBatch();
+            updateUserPs.setString(1, user.getPassword());
+            updateUserPs.setBoolean(2, user.getEnabled());
+            updateUserPs.setBoolean(3, user.getAccountNonExpired());
+            updateUserPs.setBoolean(4, user.getAccountNonLocked());
+            updateUserPs.setBoolean(5, user.getCredentialsNonExpired());
+            updateUserPs.setObject(6, user.getId());
+            updateUserPs.executeUpdate();
+            return user;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -103,16 +129,14 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
     }
 
 
-    public List<AuthUserEntity> findByUsername(String username) {
-        List<AuthUserEntity> authUsers = new ArrayList<>();
+    public Optional<AuthUserEntity> findByUsername(String username) {
+        AuthUserEntity authUser = new AuthUserEntity();
         try (PreparedStatement statement = holder(CFG.authJdbcUrl()).connection().prepareStatement(
                 "SELECT * FROM \"user\" WHERE username = ?"
         )) {
             statement.setString(1, username);
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
-
-                    AuthUserEntity authUser = new AuthUserEntity();
 
                     authUser.setId(resultSet.getObject("id", UUID.class));
                     authUser.setUsername(resultSet.getString("username"));
@@ -121,14 +145,12 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
                     authUser.setAccountNonExpired(resultSet.getBoolean("account_non_expired"));
                     authUser.setAccountNonLocked(resultSet.getBoolean("account_non_locked"));
                     authUser.setCredentialsNonExpired(resultSet.getBoolean("credentials_non_expired"));
-
-                    authUsers.add(authUser);
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return authUsers;
+        return Optional.ofNullable(authUser);
     }
 
     public void delete(AuthUserEntity authUser) {
@@ -142,32 +164,5 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public List<AuthUserEntity> findAll() {
-        List<AuthUserEntity> authUsers = new ArrayList<>();
-        try (PreparedStatement statement = holder(CFG.authJdbcUrl()).connection().prepareStatement(
-                "SELECT * FROM spend"
-        )) {
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    AuthUserEntity authUser = new AuthUserEntity();
-
-                    authUser.setId(resultSet.getObject("id", UUID.class));
-                    authUser.setUsername(resultSet.getString("username"));
-                    authUser.setPassword(resultSet.getString("password"));
-                    authUser.setEnabled(resultSet.getBoolean("enabled"));
-                    authUser.setAccountNonExpired(resultSet.getBoolean("account_non_expired"));
-                    authUser.setAccountNonLocked(resultSet.getBoolean("account_non_locked"));
-                    authUser.setCredentialsNonExpired(resultSet.getBoolean("credentials_non_expired"));
-
-                    authUsers.add(authUser);
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return authUsers;
     }
 }
