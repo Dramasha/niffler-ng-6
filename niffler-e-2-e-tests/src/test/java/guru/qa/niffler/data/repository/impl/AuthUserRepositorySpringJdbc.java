@@ -80,13 +80,11 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
                 "FROM \"user\" u " +
                 "JOIN authority a ON u.id = a.user_id " +
                 "WHERE u.id = ?";
-        // Используем ResultSetExtractor для извлечения данных из ResultSet
         Map<UUID, AuthUserEntity> userMap = jdbcTemplate.query(
                 sql,
                 new AuthUserResultSetExtractor(),
                 id
         );
-        // Возвращаем пользователя из Map по ID, если он существует
         return Optional.ofNullable(userMap.get(id));
     }
 
@@ -97,13 +95,11 @@ public class AuthUserRepositorySpringJdbc implements AuthUserRepository {
                 "FROM \"user\" u " +
                 "JOIN authority a ON u.id = a.user_id " +
                 "WHERE u.username = ?";
-        // Используем ResultSetExtractor для извлечения данных из ResultSet
         Map<UUID, AuthUserEntity> userMap = jdbcTemplate.query(
                 sql,
                 new AuthUserResultSetExtractor(),
                 userName
         );
-        // Возвращаем первый найденный элемент из Map, если он существует
         return userMap.values().stream().findFirst();
     }
 

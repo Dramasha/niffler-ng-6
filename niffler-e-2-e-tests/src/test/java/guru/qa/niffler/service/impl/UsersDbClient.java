@@ -16,9 +16,9 @@ import guru.qa.niffler.service.UsersClient;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.io.IOException;
 import java.util.Arrays;
-
-import static guru.qa.niffler.utils.RandomDataUtils.getRandomUsername;
+import java.util.List;
 
 public class UsersDbClient implements UsersClient {
 
@@ -34,7 +34,7 @@ public class UsersDbClient implements UsersClient {
     );
 
     @Override
-    public UserJson createUser(String username, String password) {
+    public UserJson registerUser(String username, String password) {
         return xaTransactionTemplate.execute(() -> {
             AuthUserEntity authUser = authUserEntity(username, password);
             authUserRepository.create(authUser);
@@ -46,55 +46,87 @@ public class UsersDbClient implements UsersClient {
     }
 
     @Override
-    public void createIncomeInvitations(UserJson targetUser, int count) {
-        if (count > 0) {
-            UserEntity targetEntity = userdataUserRepository.findById(targetUser.id()).orElseThrow();
-            for (int i = 0; i < count; i++) {
-                xaTransactionTemplate.execute(() -> {
-                    String username = getRandomUsername();
-                    AuthUserEntity authUser = authUserEntity(username, "12345");
-                    authUserRepository.create(authUser);
-                    UserEntity adressee = userdataUserRepository.create(userEntity(username));
-                    userdataUserRepository.sendInvitation(targetEntity, adressee);
-                    return null;
-                });
+    public UserJson getCurrentUser(String username)  {
+        return xaTransactionTemplate.execute(() -> {
+            UserEntity userEntity;
+            try {
+                userEntity = userdataUserRepository.findByUsername(username)
+                        .orElseThrow(() -> new IOException("User not found"));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-        }
-    }
-
-
-    @Override
-    public void createOutcomeInvitations(UserJson targetUser, int count) {
-        if (count > 0) {
-            UserEntity targetEntity = userdataUserRepository.findById(targetUser.id()).orElseThrow();
-            for (int i = 0; i < count; i++) {
-                xaTransactionTemplate.execute(() -> {
-                            String username = getRandomUsername();
-                            AuthUserEntity authUser = authUserEntity(username, "12345");
-                            authUserRepository.create(authUser);
-                            UserEntity requester = userdataUserRepository.create(userEntity(username));
-                            userdataUserRepository.sendInvitation(requester, targetEntity);
-                            return null;
-                        }
-                );
-            }
-        }
+            return UserJson.fromEntity(userEntity, null);
+        });
     }
 
     @Override
-    public void createFriends(UserJson targetUser, int count) {
-        if (count > 0) {
-            UserEntity targetEntity = userdataUserRepository.findById(targetUser.id()).orElseThrow();
-            for (int i = 0; i < count; i++) {
-                xaTransactionTemplate.execute(() -> {
-                            String username = getRandomUsername();
-                            return null;
-                        }
-                );
+    public UserJson updateUser(UserJson user) {
+        return xaTransactionTemplate.execute(() -> {
+            UserEntity userEntity;
+            try {
+                userEntity = userdataUserRepository.findById(user.id())
+                        .orElseThrow(() -> new IOException("User not found"));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-        }
+            userEntity.setUsername(user.username());
+            userdataUserRepository.update(userEntity);
+            return UserJson.fromEntity(userEntity, null);
+        });
     }
 
+    @Override
+    public List<UserJson> getAllUsers(String username, String searchQuery) throws IOException {
+        throw new UnsupportedOperationException("Get all users is not supported now");
+    }
+
+    @Override
+    public List<UserJson> getFriends(String username, String searchQuery) throws IOException {
+        throw new UnsupportedOperationException("Get friends is not supported now");
+    }
+
+    @Override
+    public UserJson sendInvitation(String username, String targetUsername) throws IOException {
+        return xaTransactionTemplate.execute(() -> {
+            UserEntity requester;
+            try {
+                requester = userdataUserRepository.findByUsername(username)
+                        .orElseThrow(() -> new IOException("User not found: " + username));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            UserEntity addressee;
+            try {
+                addressee = userdataUserRepository.findByUsername(targetUsername)
+                        .orElseThrow(() -> new IOException("Target user not found: " + targetUsername));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            userdataUserRepository.sendInvitation(requester, addressee);
+            return UserJson.fromEntity(addressee, null);
+        });
+    }
+
+    @Override
+    public UserJson acceptInvitation(String username, String targetUsername) throws IOException {
+        throw new UnsupportedOperationException("Accept invitation is not supported now");
+    }
+
+    @Override
+    public UserJson declineInvitation(String username, String targetUsername) throws IOException {
+        throw new UnsupportedOperationException("Decline invitation is not supported now");
+    }
+
+    @Override
+    public void removeFriend(String username, String targetUsername) throws IOException {
+        throw new UnsupportedOperationException("Remove friend is not supported now");
+    }
+
+    private UserEntity createNewUser(String username, String password) {
+        AuthUserEntity authUser = authUserEntity(username, password);
+        authUserRepository.create(authUser);
+        return userdataUserRepository.create(userEntity(username));
+    }
 
     private UserEntity userEntity(String username) {
         UserEntity ue = new UserEntity();

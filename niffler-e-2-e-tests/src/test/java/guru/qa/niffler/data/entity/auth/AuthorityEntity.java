@@ -14,6 +14,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "authority")
 public class AuthorityEntity implements Serializable {
+
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "id", nullable = false, columnDefinition = "UUID default gen_random_uuid()")
@@ -36,6 +37,13 @@ public class AuthorityEntity implements Serializable {
     if (thisEffectiveClass != oEffectiveClass) return false;
     AuthorityEntity that = (AuthorityEntity) o;
     return getId() != null && Objects.equals(getId(), that.getId());
+  }
+
+  public AuthorityEntity(UUID id) {
+    this.id = id;
+  }
+
+  public AuthorityEntity() {
   }
 
   @Override

@@ -13,7 +13,7 @@ public class FriendsPage {
     private final SelenideElement
             friendsAndAllPeopleBar = $("[role='navigation']"),
             searchInput = $("[placeholder='Search']"),
-            searchButton = $("#input-submit"),
+            clickSearch = $("[data-testid='SearchIcon']"),
             friendTable = $("#simple-tabpanel-friends"),
             friendsArea = $("#friends"),
             allArea = $("#all"),
@@ -22,6 +22,16 @@ public class FriendsPage {
 
     public void checkWhatUserDontHaveFriends() {
         friendTable.shouldHave(text("There are no users yet"));
+    }
+
+    public void searchManByUsername(String usernameFriend) {
+        searchInput.setValue(usernameFriend);
+        searchInput.shouldHave(text(usernameFriend));
+        clickSearch.click();
+    }
+
+    public void checkUsernameAfterSearch(String username){
+        allArea.shouldHave(text(username));
     }
 
     public FriendsPage checkWhatUserHaveFriends() {
