@@ -13,9 +13,11 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class UserApiClient implements UsersClient, okhttp3.CookieJar {
 
@@ -44,7 +46,7 @@ public class UserApiClient implements UsersClient, okhttp3.CookieJar {
     }
 
     @Override
-    public UserJson registerUser(String username, String password) throws IOException {
+    public @Nonnull UserJson registerUser(@Nonnull String username, @Nonnull String password) throws IOException {
         Response<Void> formResponse;
         try {
             formResponse = authApi.requestRegisterForm().execute();
@@ -62,7 +64,7 @@ public class UserApiClient implements UsersClient, okhttp3.CookieJar {
                 }
                 if (registerResponse.isSuccessful()) {
                     try {
-                        return userApi.getCurrentUser(username).execute().body();
+                        return Objects.requireNonNull(userApi.getCurrentUser(username).execute().body());
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -73,77 +75,57 @@ public class UserApiClient implements UsersClient, okhttp3.CookieJar {
     }
 
     @Override
-    public UserJson getCurrentUser(String username) throws IOException {
+    public @Nonnull UserJson getCurrentUser(@Nonnull String username) throws IOException {
         Response<UserJson> formResponse = userApi.getCurrentUser(username)
                 .execute();
         if (formResponse.isSuccessful()) {
-            return formResponse.body();
+            return Objects.requireNonNull(formResponse.body());
         }
         throw new IOException("Failed to get current user: " + formResponse.body());
     }
 
     @Override
-    public UserJson updateUser(UserJson user) throws IOException {
+    public @Nonnull UserJson updateUser(@Nonnull UserJson user) throws IOException {
         Response<UserJson> formResponse = userApi.updateUser(user)
                 .execute();
         if (formResponse.isSuccessful()) {
-            return formResponse.body();
+            return Objects.requireNonNull(formResponse.body());
         }
         throw new IOException("Failed to update user: " + formResponse.body());
     }
 
     @Override
-    public List<UserJson> getAllUsers(String username, String searchQuery) throws IOException {
-        Response<List<UserJson>> formResponse = userApi.getAllUsers(username, searchQuery)
-                .execute();
-        if (formResponse.isSuccessful()) {
-            return formResponse.body();
-        }
-        throw new IOException("Failed to get all users: " + formResponse.body());
-    }
-
-    @Override
-    public List<UserJson> getFriends(String username, String searchQuery) throws IOException {
-        Response<List<UserJson>> formResponse = userApi.getFriends(username, searchQuery)
-                .execute();
-        if (formResponse.isSuccessful()) {
-            return formResponse.body();
-        }
-        throw new IOException("Failed to get friends: " + formResponse.body());
-    }
-
-    @Override
-    public UserJson sendInvitation(String username, String targetUsername) throws IOException {
+    public @Nonnull UserJson sendInvitation(@Nonnull String username, @Nonnull String targetUsername) throws IOException {
         Response<UserJson> formResponse = userApi.sendInvitation(username, targetUsername)
                 .execute();
         if (formResponse.isSuccessful()) {
-            return formResponse.body();
+            return Objects.requireNonNull(formResponse.body());
         }
         throw new IOException("Failed to send invitation: " + formResponse.body());
     }
 
     @Override
-    public UserJson acceptInvitation(String username, String targetUsername) throws IOException {
+    public @Nonnull UserJson acceptInvitation(@Nonnull String username, @Nonnull String targetUsername) throws IOException {
         Response<UserJson> formResponse = userApi.acceptInvitation(username, targetUsername)
                 .execute();
         if (formResponse.isSuccessful()) {
-            return formResponse.body();
+            return Objects.requireNonNull(formResponse.body());
         }
         throw new IOException("Failed to accept invitation: " + formResponse.body());
     }
 
     @Override
-    public UserJson declineInvitation(String username, String targetUsername) throws IOException {
+    public @Nonnull UserJson declineInvitation(@Nonnull String username, @Nonnull String targetUsername) throws IOException {
         Response<UserJson> formResponse = userApi.declineInvitation(username, targetUsername)
                 .execute();
         if (formResponse.isSuccessful()) {
-            return formResponse.body();
+            return Objects.requireNonNull(formResponse.body());
         }
         throw new IOException("Failed to decline invitation: " + formResponse.body());
     }
 
     @Override
-    public void removeFriend(String username, String targetUsername) throws IOException {
+    public void removeFriend(@Nonnull String username, @Nonnull String targetUsername) throws IOException {
         Response<Void> formResponse = userApi.removeFriend(username, targetUsername)
                 .execute();
         if (!formResponse.isSuccessful()) {

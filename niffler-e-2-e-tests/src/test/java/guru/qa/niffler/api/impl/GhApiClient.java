@@ -3,12 +3,16 @@ package guru.qa.niffler.api.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import guru.qa.niffler.api.GhApi;
 import guru.qa.niffler.config.Config;
-import lombok.SneakyThrows;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.io.IOException;
 import java.util.Objects;
 
+@ParametersAreNonnullByDefault
 public class GhApiClient {
 
     private static final String GhToken = "GITHUB_TOKEN";
@@ -20,14 +24,17 @@ public class GhApiClient {
 
     private final GhApi ghApi = retrofit.create(GhApi.class);
 
-    @SneakyThrows
-    public String getIssueState(String issueNumber) {
-        JsonNode response = ghApi.issue(
-                        "Bearer " + System.getenv(GhToken),
-                        issueNumber
-                )
-                .execute()
-                .body();
-        return Objects.requireNonNull(response).get("state").asText();
+    public @Nonnull String getIssueState(@Nonnull String issueNumber) {
+        final Response<JsonNode> response;
+        try {
+            response = ghApi.issue(
+                            "Bearer " + System.getenv(GhToken),
+                            issueNumber
+                    )
+                    .execute();
+        } catch (IOException e) {
+            throw new AssertionError(e);
+        }
+        return Objects.requireNonNull(response.body()).get("state").asText();
     }
 }

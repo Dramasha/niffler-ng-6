@@ -2,6 +2,7 @@ package guru.qa.niffler.page;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import io.qameta.allure.Step;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
@@ -22,31 +23,37 @@ public class MainPage {
             allArea = $("[aria-labelledby='tableTitle']"),
             peopleTabs = $("[aria-label='People tabs']");
 
+    @Step("Поиск спенда по имени {nameSpending}")
     public void searchSpendsByName(String nameSpending) {
         searchInput.setValue(nameSpending);
         searchInput.shouldHave(text(nameSpending));
         clickSearch.click();
     }
 
+    @Step("Поиск спенда по имени {nameSpending} после поиска")
     public void checkSpendAfterSearch(String name){
         allArea.shouldHave(text(name));
     }
 
+    @Step("Нажать на кнопку редактирования спенда")
     public EditSpendingPage editSpending(String spendingDescription) {
         tableRows.find(text(spendingDescription)).$$("td").get(5).click();
 
         return new EditSpendingPage();
     }
 
+    @Step("Проверка того, что в списке есть ожидаемый спенд")
     public void checkThatTableContainsSpending(String spendingDescription) {
         tableRows.find(text(spendingDescription)).should(visible);
     }
 
+    @Step("Проверка успешной авторизации")
     public void checkIsLoaded() {
         statisticText.shouldBe(visible).shouldHave(text("Statistics"));
         spendingsText.shouldBe(visible).shouldHave(text("History of Spendings"));
     }
 
+    @Step("Перейти в Профиль")
     public ProfilePage goToProfile() {
         personIcon.click();
         personMenu.shouldBe(visible).$(byText("Profile")).click();
@@ -55,6 +62,7 @@ public class MainPage {
         return new ProfilePage();
     }
 
+    @Step("Перейти в Друзья")
     public FriendsPage goToFriendsUser() {
         personIcon.click();
         personMenu.shouldBe(visible).$(byText("Friends")).click();
@@ -63,6 +71,7 @@ public class MainPage {
         return new FriendsPage();
     }
 
+    @Step("Кликнуть на Выйти")
     public LoginPage clickToSignOut() {
         personIcon.click();
         personMenu.shouldBe(visible).$(byText("Sign out")).click();

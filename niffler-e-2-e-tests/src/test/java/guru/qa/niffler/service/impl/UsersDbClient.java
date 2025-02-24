@@ -16,9 +16,9 @@ import guru.qa.niffler.service.UsersClient;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 
 public class UsersDbClient implements UsersClient {
 
@@ -34,7 +34,7 @@ public class UsersDbClient implements UsersClient {
     );
 
     @Override
-    public UserJson registerUser(String username, String password) {
+    public @Nonnull UserJson registerUser(@Nonnull String username, @Nonnull String password) {
         return xaTransactionTemplate.execute(() -> {
             AuthUserEntity authUser = authUserEntity(username, password);
             authUserRepository.create(authUser);
@@ -46,7 +46,7 @@ public class UsersDbClient implements UsersClient {
     }
 
     @Override
-    public UserJson getCurrentUser(String username)  {
+    public @Nonnull UserJson getCurrentUser(@Nonnull String username) {
         return xaTransactionTemplate.execute(() -> {
             UserEntity userEntity;
             try {
@@ -60,7 +60,7 @@ public class UsersDbClient implements UsersClient {
     }
 
     @Override
-    public UserJson updateUser(UserJson user) {
+    public @Nonnull UserJson updateUser(@Nonnull UserJson user) {
         return xaTransactionTemplate.execute(() -> {
             UserEntity userEntity;
             try {
@@ -76,17 +76,7 @@ public class UsersDbClient implements UsersClient {
     }
 
     @Override
-    public List<UserJson> getAllUsers(String username, String searchQuery) throws IOException {
-        throw new UnsupportedOperationException("Get all users is not supported now");
-    }
-
-    @Override
-    public List<UserJson> getFriends(String username, String searchQuery) throws IOException {
-        throw new UnsupportedOperationException("Get friends is not supported now");
-    }
-
-    @Override
-    public UserJson sendInvitation(String username, String targetUsername) throws IOException {
+    public @Nonnull UserJson sendInvitation(@Nonnull String username, @Nonnull String targetUsername) {
         return xaTransactionTemplate.execute(() -> {
             UserEntity requester;
             try {
@@ -108,17 +98,17 @@ public class UsersDbClient implements UsersClient {
     }
 
     @Override
-    public UserJson acceptInvitation(String username, String targetUsername) throws IOException {
+    public @Nonnull UserJson acceptInvitation(@Nonnull String username, @Nonnull String targetUsername) {
         throw new UnsupportedOperationException("Accept invitation is not supported now");
     }
 
     @Override
-    public UserJson declineInvitation(String username, String targetUsername) throws IOException {
+    public @Nonnull UserJson declineInvitation(@Nonnull String username, @Nonnull String targetUsername) {
         throw new UnsupportedOperationException("Decline invitation is not supported now");
     }
 
     @Override
-    public void removeFriend(String username, String targetUsername) throws IOException {
+    public void removeFriend(@Nonnull String username, @Nonnull String targetUsername) {
         throw new UnsupportedOperationException("Remove friend is not supported now");
     }
 

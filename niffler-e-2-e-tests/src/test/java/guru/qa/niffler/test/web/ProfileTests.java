@@ -10,7 +10,7 @@ import guru.qa.niffler.page.MainPage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Selenide.*;
 
 @ExtendWith(BrowserExtension.class)
 public class ProfileTests {
@@ -20,7 +20,6 @@ public class ProfileTests {
     @User(
             username = "Dramasha",
             categories = @Category(
-                    archived = false
             )
     )
     @Test
