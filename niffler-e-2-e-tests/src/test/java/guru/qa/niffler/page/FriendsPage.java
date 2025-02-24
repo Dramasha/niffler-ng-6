@@ -1,6 +1,7 @@
 package guru.qa.niffler.page;
 
 import com.codeborne.selenide.SelenideElement;
+import guru.qa.niffler.test.web.BaseTest;
 import io.qameta.allure.Step;
 
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThan;
@@ -9,7 +10,7 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 
-public class FriendsPage {
+public class FriendsPage extends BaseTest {
 
     private final SelenideElement
             friendsAndAllPeopleBar = $("[role='navigation']"),
@@ -18,7 +19,11 @@ public class FriendsPage {
             friendTable = $("#simple-tabpanel-friends"),
             friendsArea = $("#friends"),
             allArea = $("#all"),
-            request = $("#requests");
+            request = $("#requests"),
+            accept = $(byText("Accept")).as("кнопка 'Accept'"),
+            unfriend = $(byText("Unfriend")).as("кнопка 'Unfriend'"),
+            decline = $(byText("Decline")).as("кнопка 'Decline'"),
+            declineBtnInActionMenu = $(".MuiDialogActions-spacing [type='button']:nth-child(2)").as("кнопка 'Decline' в диалоговом окне");
 
 
     @Step("Проверка, что у пользователя нет друзей")
@@ -34,7 +39,7 @@ public class FriendsPage {
     }
 
     @Step("Проверка присутствия записи Друга по имени {username}")
-    public void checkUsernameAfterSearch(String username){
+    public void checkUsernameAfterSearch(String username) {
         allArea.shouldHave(text(username));
     }
 
@@ -77,6 +82,26 @@ public class FriendsPage {
 
     public void checkWhatUserHaveRequestForFriendshipToSpecificUser(String username) {
         allArea.findAll("tr").filter(text(username)).first().shouldHave(text("Waiting..."));
+    }
+
+    @Step("Принять заявку в друзья")
+    public FriendsPage acceptFriend() {
+        accept.click();
+        return this;
+    }
+
+    @Step("Кнопка 'Unfriend' отображается")
+    public FriendsPage unfriendBtnIsVisibleCheck() {
+        unfriend.shouldBe(visible);
+        return this;
+    }
+
+
+    @Step("Отклонить заявку в друзья")
+    public FriendsPage declineFriend() {
+        decline.click();
+        declineBtnInActionMenu.click();
+        return this;
     }
 
 }

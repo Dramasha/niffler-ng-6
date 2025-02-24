@@ -98,4 +98,10 @@ public class ProfilePage {
 
         return new ProfilePage();
     }
+
+    @Step("Проверка имени пользователя")
+    public ProfilePage checkName(String name) {
+        nameInput.shouldHave(value(name));
+        return this;
+    }
 }

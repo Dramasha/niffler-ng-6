@@ -1,4 +1,4 @@
-package guru.qa.niffler.page.compinent;
+package guru.qa.niffler.page.component;
 
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
@@ -7,7 +7,7 @@ import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
 
 public class Calendar {
-    private final SelenideElement calendar = $("input[name='date']");
+    private final SelenideElement calendar = $(".MuiDateCalendar-root");
 
     @Step("Выбрать дату в календаре")
     public Calendar selectDateInCalendar(String date) {
