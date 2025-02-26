@@ -7,10 +7,12 @@ import org.openqa.selenium.Keys;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
 
-public class PeoplePage {
+public class PeoplePage extends BasePage<PeoplePage>{
 
-    private final SelenideElement peopleTable = $("#all").as("список людей и отправленных заявок в друзбя");
-    private final SelenideElement searchInput =  $("input[type='text']").as("инпут поиска");
+    private final SelenideElement
+            peopleTable = $("#all").as("список людей и отправленных заявок в друзья"),
+            allPeopleTabActive = $(".Mui-selected"),
+            searchInput =  $("input[type='text']").as("инпут поиска");
 
     @Step("Проверка того, что у пользователя есть отправленная заявка в друзья")
     public PeoplePage invitationSentToUserCheck(String username) {
@@ -25,5 +27,11 @@ public class PeoplePage {
         searchInput.setValue(username);
         searchInput.sendKeys(Keys.ENTER);
         return new FriendsPage();
+    }
+
+    @Override
+    public PeoplePage checkThatPageLoaded() {
+        allPeopleTabActive.shouldHave(text("Friends"));
+        return this;
     }
 }

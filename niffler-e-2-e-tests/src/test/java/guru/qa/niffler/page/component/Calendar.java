@@ -6,8 +6,13 @@ import io.qameta.allure.Step;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
 
-public class Calendar {
+public class Calendar extends BaseComponent<Calendar> {
+
     private final SelenideElement calendar = $(".MuiDateCalendar-root");
+
+    public Calendar() {
+        super($(".MuiPickersLayout-root"));
+    }
 
     @Step("Выбрать дату в календаре")
     public Calendar selectDateInCalendar(String date) {

@@ -1,12 +1,12 @@
 package guru.qa.niffler.page;
 
 import com.codeborne.selenide.SelenideElement;
-import guru.qa.niffler.test.web.BaseTest;
 import io.qameta.allure.Step;
 
+import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
-public class EditSpendingPage extends BaseTest {
+public class EditSpendingPage extends BasePage<EditSpendingPage> {
     private final SelenideElement
             descriptionInput = $("#description"),
             categoryInput = $("#category"),
@@ -33,6 +33,13 @@ public class EditSpendingPage extends BaseTest {
     @Step("Установить стоимость траты")
     public EditSpendingPage setSpendingAmount(String amount) {
         amountInput.setValue(amount);
+        return this;
+    }
+
+    @Step("Проверка загрузки страницы с Редактированием Спендинга")
+    @Override
+    public EditSpendingPage checkThatPageLoaded() {
+        amountInput.shouldBe(visible);
         return this;
     }
 }

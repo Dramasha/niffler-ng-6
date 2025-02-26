@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class UserApiClient implements UsersClient, okhttp3.CookieJar {
+public class UserApiClient implements UsersClient, okhttp3.CookieJar{
 
     private final UserApi userApi;
     private final AuthApi authApi;

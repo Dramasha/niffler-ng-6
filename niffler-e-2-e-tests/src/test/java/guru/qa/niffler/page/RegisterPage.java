@@ -4,9 +4,11 @@ import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 
 import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
-public class RegisterPage {
+public class RegisterPage extends BasePage<RegisterPage> {
+
     private final SelenideElement
             usernameInput = $("#username"),
             passwordInput = $("#password"),
@@ -42,5 +44,11 @@ public class RegisterPage {
     @Step("Проверка сообщения о длине пароля от 3 до 12 знаков, при регистрации пользователя")
     public void checkLengthPasswordError() {
         registeredUnsuccessful.shouldHave(text("Allowed password length should be from 3 to 12 characters"));
+    }
+
+    @Override
+    public RegisterPage checkThatPageLoaded() {
+        signInButton.should(visible);
+        return this;
     }
 }

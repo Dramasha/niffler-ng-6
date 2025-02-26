@@ -82,6 +82,7 @@ public class FriendsTests {
         new FriendsPage()
                 .getHeader()
                 .toFriendsPage()
+                .checkThatPageLoaded()
                 .acceptFriend()
                 .unfriendBtnIsVisibleCheck();
     }

@@ -1,16 +1,21 @@
 package guru.qa.niffler.page;
 
+import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
-import guru.qa.niffler.test.web.BaseTest;
 import io.qameta.allure.Step;
+
+import java.util.Collection;
 
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThan;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.$$;
 
-public class FriendsPage extends BaseTest {
+public class FriendsPage extends BasePage<FriendsPage> {
+
 
     private final SelenideElement
             friendsAndAllPeopleBar = $("[role='navigation']"),
@@ -23,6 +28,7 @@ public class FriendsPage extends BaseTest {
             accept = $(byText("Accept")).as("кнопка 'Accept'"),
             unfriend = $(byText("Unfriend")).as("кнопка 'Unfriend'"),
             decline = $(byText("Decline")).as("кнопка 'Decline'"),
+            friendsTabActive = $(".Mui-selected"),
             declineBtnInActionMenu = $(".MuiDialogActions-spacing [type='button']:nth-child(2)").as("кнопка 'Decline' в диалоговом окне");
 
 
@@ -96,7 +102,6 @@ public class FriendsPage extends BaseTest {
         return this;
     }
 
-
     @Step("Отклонить заявку в друзья")
     public FriendsPage declineFriend() {
         decline.click();
@@ -104,4 +109,10 @@ public class FriendsPage extends BaseTest {
         return this;
     }
 
+    @Step("Проверка загрузки страницы с Друзьями")
+    @Override
+    public FriendsPage checkThatPageLoaded() {
+        friendsTabActive.shouldHave(text("Friends"));
+        return this;
+    }
 }

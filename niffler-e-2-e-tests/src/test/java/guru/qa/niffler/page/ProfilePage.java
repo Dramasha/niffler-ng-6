@@ -103,4 +103,9 @@ public class ProfilePage extends BasePage<ProfilePage> {
     public void checkName(String name) {
         nameInput.shouldHave(value(name));
     }
+
+    @Override
+    public ProfilePage checkThatPageLoaded() {
+        return null;
+    }
 }
