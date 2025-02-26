@@ -14,7 +14,7 @@ import static com.codeborne.selenide.Selenide.$$;
 
 public class SpendingTable extends BaseComponent<SpendingTable> {
 
-    public SpendingTable(SelenideElement self) {
+    public SpendingTable() {
         super($(".MuiTableContainer-root"));
     }
 

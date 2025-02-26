@@ -53,11 +53,11 @@ public class UserExtension implements BeforeEachCallback, ParameterResolver {
                             : userJson;
 
                     List<UserJson> incomeInvitation =
-                            usersClient.sendInvitation(user.username(), "Dramasha", 1);
+                            usersClient.sendInvitation("Dramasha", user.username(), 1);
                     user.testData().income().addAll(incomeInvitation.stream().map(UserJson::username).toList());
 
                     List<UserJson> outcomeInvitation =
-                            usersClient.sendInvitation("Dramasha", user.username(), 1);
+                            usersClient.sendInvitation(user.username(), "Dramasha", 1);
                     user.testData().outcome().addAll(outcomeInvitation.stream().map(UserJson::username).toList());
 
                     List<UserJson> addedFriends = usersClient.addFriend("Dramasha", 1);

@@ -7,7 +7,6 @@ import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.page.EditSpendingPage;
 import guru.qa.niffler.page.LoginPage;
-import guru.qa.niffler.page.MainPage;
 import guru.qa.niffler.page.component.SpendingTable;
 import guru.qa.niffler.service.impl.UsersDbClient;
 import org.junit.jupiter.api.DisplayName;
@@ -25,7 +24,7 @@ public class SpendingWebTest {
     @User(
             username = "Dramasha",
             spendings = @Spending(
-                    category = "Обучение",
+                    category = "Обуasfaчение",
                     description = "Обучение Advanced 2.0",
                     amount = 79990
             )
@@ -37,7 +36,7 @@ public class SpendingWebTest {
         String newDescription = "ловушка Докера";
 
         open(CFG.frontDockerUrl(), LoginPage.class)
-                .login("Dramasha", "123");
+                .login("Admin", "123");
         spendingTable.editSpending(spend.description())
                 .checkThatPageLoaded()
                 .setNewSpendingDescription(newDescription)
