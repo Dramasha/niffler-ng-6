@@ -10,7 +10,7 @@ import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
-public class ProfilePage {
+public class ProfilePage extends BasePage<ProfilePage> {
     private static final ElementsCollection
             searchCategory = $$("[class='MuiBox-root css-1lekzkb']");
 
@@ -100,8 +100,7 @@ public class ProfilePage {
     }
 
     @Step("Проверка имени пользователя")
-    public ProfilePage checkName(String name) {
+    public void checkName(String name) {
         nameInput.shouldHave(value(name));
-        return this;
     }
 }
