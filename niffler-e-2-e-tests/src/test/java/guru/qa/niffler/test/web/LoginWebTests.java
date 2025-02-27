@@ -20,7 +20,7 @@ public class LoginWebTests {
 
     @User(
             categories = {
-                    @Category(title = "cat1", archived = false),
+                    @Category(title = "cat1"),
                     @Category(title = "cat2", archived = true)
             },
             spendings = {
@@ -36,7 +36,7 @@ public class LoginWebTests {
     void loginTest(UserJson user) {
         open(CFG.frontDockerUrl(), LoginPage.class)
                 .login(user.username(), user.testData().password());
-        mainPage.checkIsLoaded();
+        mainPage.checkThatPageLoaded();
     }
 
 
@@ -45,7 +45,8 @@ public class LoginWebTests {
         String username = "Dramasha";
         open(CFG.frontDockerUrl(), LoginPage.class)
                 .login(username, invalidPassword);
-        loginPage.checkErrorBadCredentials();
+        loginPage.checkThatPageLoaded()
+                .checkErrorBadCredentials();
     }
 
 }

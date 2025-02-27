@@ -32,6 +32,7 @@ public class UserExtension implements BeforeEachCallback, ParameterResolver {
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
+
                         context.getStore(NAMESPACE).put(
                                 context.getUniqueId(),
                                 testUser.addTestData(
