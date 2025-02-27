@@ -31,12 +31,14 @@ public class SpendingWebTest {
     )
 
     @Test
-    void categoryDescriptionShouldBeChangedFromTable(SpendJson spend) {
+    void categoryDescriptionShouldBeChangedFromTable(SpendJson[] spends) {
+        SpendJson spend = spends[0];
         String newDescription = "ловушка Докера";
 
         open(CFG.frontDockerUrl(), LoginPage.class)
                 .login("Dramasha", "123");
         mainPage.editSpending(spend.description())
+                .checkThatPageLoaded()
                 .setNewSpendingDescription(newDescription)
                 .save();
         new MainPage().checkThatTableContainsSpending(newDescription);
@@ -60,7 +62,7 @@ public class SpendingWebTest {
                 .setNewSpendingDescription("forTest")
                 .setSpendingAmount("2000")
                 .getCalendar()
-                .selectDateInCalendar("8.June.1996");
+                .selectDateInCalendar("1996", "June", "8");
 
         new EditSpendingPage().save();
 
