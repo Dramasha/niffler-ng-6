@@ -1,7 +1,6 @@
 package guru.qa.niffler.page.component;
 
 import io.qameta.allure.Step;
-import org.openqa.selenium.Keys;
 
 import static com.codeborne.selenide.Selenide.$;
 
@@ -17,7 +16,7 @@ public class SearchField extends BaseComponent<SearchField> {
     @Step("Осуществить поиск")
     public SearchField search(String query) {
         self.setValue(query);
-        self.sendKeys(Keys.ENTER);
+        self.pressEnter();
         return this;
     }
 

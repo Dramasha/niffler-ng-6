@@ -1,5 +1,6 @@
 package guru.qa.niffler.page;
 
+import guru.qa.niffler.config.Config;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.page.component.Calendar;
 import guru.qa.niffler.page.component.Header;

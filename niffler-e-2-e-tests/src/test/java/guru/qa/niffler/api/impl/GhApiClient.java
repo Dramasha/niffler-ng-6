@@ -8,7 +8,6 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
-import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
 import java.util.Objects;
@@ -25,7 +24,7 @@ public class GhApiClient extends RestClient {
         this.ghApi = retrofit.create(GhApi.class);
     }
 
-    public @Nonnull String getIssueState(@Nonnull String issueNumber) {
+    public String getIssueState(String issueNumber) {
         final Response<JsonNode> response;
         try {
             response = ghApi.issue(

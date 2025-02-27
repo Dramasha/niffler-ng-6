@@ -65,10 +65,4 @@ public class JdbcTests {
         );
         System.out.println(user);
     }
-
-    @Test
-    void apiTest() throws IOException {
-        UsersClient userApi = new UserApiClient();
-        UserJson user = userApi.registerUser("TESTFORTEST767t6", "12345");
-    }
 }

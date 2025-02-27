@@ -1,13 +1,15 @@
 package guru.qa.niffler.page;
 
 import com.codeborne.selenide.SelenideElement;
+import guru.qa.niffler.page.component.SearchField;
 import io.qameta.allure.Step;
-import org.openqa.selenium.Keys;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
 
 public class PeoplePage extends BasePage<PeoplePage>{
+
+    private final SearchField searchField = new SearchField();
 
     private final SelenideElement
             peopleTable = $("#all").as("список людей и отправленных заявок в друзья"),
@@ -24,8 +26,7 @@ public class PeoplePage extends BasePage<PeoplePage>{
 
     @Step("Осуществить поиск друга")
     private FriendsPage makeFriendSearch(String username) {
-        searchInput.setValue(username);
-        searchInput.sendKeys(Keys.ENTER);
+        searchField.search(username);
         return new FriendsPage();
     }
 
