@@ -13,6 +13,7 @@ import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.UsersClient;
+import io.qameta.allure.Step;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -34,6 +35,7 @@ public class UsersDbClient implements UsersClient {
     );
 
     @Override
+    @Step("Регистрация нового пользователя")
     public @Nonnull UserJson registerUser(@Nonnull String username, @Nonnull String password) {
         return xaTransactionTemplate.execute(() -> {
             AuthUserEntity authUser = authUserEntity(username, password);
@@ -46,6 +48,7 @@ public class UsersDbClient implements UsersClient {
     }
 
     @Override
+    @Step("Поиск пользователя по Логину")
     public @Nonnull UserJson getCurrentUser(@Nonnull String username) {
         return xaTransactionTemplate.execute(() -> {
             UserEntity userEntity;
@@ -60,6 +63,7 @@ public class UsersDbClient implements UsersClient {
     }
 
     @Override
+    @Step("Обновление пользователя")
     public @Nonnull UserJson updateUser(@Nonnull UserJson user) {
         return xaTransactionTemplate.execute(() -> {
             UserEntity userEntity;
@@ -76,6 +80,7 @@ public class UsersDbClient implements UsersClient {
     }
 
     @Override
+    @Step("Отправить запрос в друзья")
     public @Nonnull UserJson sendInvitation(@Nonnull String username, @Nonnull String targetUsername) {
         return xaTransactionTemplate.execute(() -> {
             UserEntity requester;
@@ -98,24 +103,21 @@ public class UsersDbClient implements UsersClient {
     }
 
     @Override
+    @Step("Принять запрос в друзья")
     public @Nonnull UserJson acceptInvitation(@Nonnull String username, @Nonnull String targetUsername) {
         throw new UnsupportedOperationException("Accept invitation is not supported now");
     }
 
     @Override
+    @Step("Отклонить запрос в друзья")
     public @Nonnull UserJson declineInvitation(@Nonnull String username, @Nonnull String targetUsername) {
         throw new UnsupportedOperationException("Decline invitation is not supported now");
     }
 
     @Override
+    @Step("Удалить пользователя из друзей")
     public void removeFriend(@Nonnull String username, @Nonnull String targetUsername) {
         throw new UnsupportedOperationException("Remove friend is not supported now");
-    }
-
-    private UserEntity createNewUser(String username, String password) {
-        AuthUserEntity authUser = authUserEntity(username, password);
-        authUserRepository.create(authUser);
-        return userdataUserRepository.create(userEntity(username));
     }
 
     private UserEntity userEntity(String username) {

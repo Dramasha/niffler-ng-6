@@ -8,6 +8,7 @@ import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.page.EditSpendingPage;
 import guru.qa.niffler.page.LoginPage;
 import guru.qa.niffler.page.MainPage;
+import guru.qa.niffler.page.component.SpendingTable;
 import guru.qa.niffler.service.impl.UsersDbClient;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,7 @@ import static guru.qa.niffler.utils.RandomDataUtils.getRandomUsername;
 public class SpendingWebTest {
 
     private final Config CFG = Config.getInstance();
-    private final MainPage mainPage = new MainPage();
+    private final SpendingTable spendingTable = new SpendingTable();
 
     @User(
             username = "Dramasha",
@@ -36,10 +37,10 @@ public class SpendingWebTest {
 
         open(CFG.frontDockerUrl(), LoginPage.class)
                 .login("Dramasha", "123");
-        mainPage.editSpending(spend.description())
+        spendingTable.editSpending(spend.description())
                 .setNewSpendingDescription(newDescription)
                 .save();
-        new MainPage().checkThatTableContainsSpending(newDescription);
+        spendingTable.checkThatTableContainsSpending(newDescription);
     }
 
     @Test
@@ -63,7 +64,6 @@ public class SpendingWebTest {
                 .selectDateInCalendar("8.June.1996");
 
         new EditSpendingPage().save();
-
-        new MainPage().checkThatTableContainsSpending("test");
+        spendingTable.checkThatTableContainsSpending("test");
     }
 }

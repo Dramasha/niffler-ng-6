@@ -18,34 +18,8 @@ public class MainPage {
             personIcon = $("[data-testid='PersonIcon']"),
             personMenu = $("[role='menu']"),
             imageInput = $(".image__input-label"),
-            searchInput = $("[placeholder='Search']"),
-            clickSearch = $("[data-testid='SearchIcon']"),
-            allArea = $("[aria-labelledby='tableTitle']"),
             peopleTabs = $("[aria-label='People tabs']");
 
-    @Step("Поиск спенда по имени {nameSpending}")
-    public void searchSpendsByName(String nameSpending) {
-        searchInput.setValue(nameSpending);
-        searchInput.shouldHave(text(nameSpending));
-        clickSearch.click();
-    }
-
-    @Step("Поиск спенда по имени {nameSpending} после поиска")
-    public void checkSpendAfterSearch(String name){
-        allArea.shouldHave(text(name));
-    }
-
-    @Step("Нажать на кнопку редактирования спенда")
-    public EditSpendingPage editSpending(String spendingDescription) {
-        tableRows.find(text(spendingDescription)).$$("td").get(5).click();
-
-        return new EditSpendingPage();
-    }
-
-    @Step("Проверка того, что в списке есть ожидаемый спенд")
-    public void checkThatTableContainsSpending(String spendingDescription) {
-        tableRows.find(text(spendingDescription)).should(visible);
-    }
 
     @Step("Проверка успешной авторизации")
     public void checkIsLoaded() {
