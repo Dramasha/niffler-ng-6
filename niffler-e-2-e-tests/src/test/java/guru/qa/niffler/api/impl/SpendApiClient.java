@@ -38,59 +38,8 @@ public class SpendApiClient implements SpendClient {
         } catch (IOException e) {
             throw new AssertionError(e);
         }
-
         return Objects.requireNonNull(response.body());
-
     }
-
-//    @Override
-//    @Nonnull
-//    public SpendJson updateSpend(SpendJson spend) {
-//        final Response<SpendJson> response;
-//        try {
-//            response = spendApi.editSpend(spend)
-//                    .execute();
-//        } catch (IOException e) {
-//            throw new AssertionError(e);
-//        }
-//
-//        return Objects.requireNonNull(response.body());
-//
-//    }
-//
-//    @Override
-//    public Optional<SpendJson> findSpendById(UUID id) {
-//        final Response<SpendJson> response;
-//        try {
-//            response = spendApi.getSpend(id.toString())
-//                    .execute();
-//        } catch (IOException e) {
-//            throw new AssertionError(e);
-//        }
-//        if (response.isSuccessful()) {
-//            return Optional.ofNullable(response.body());
-//        }
-//        return Optional.empty();
-//    }
-//
-//    @Override
-//    public List<SpendJson> findSpendByIdAndUsername(String id, String username) {
-//        throw new UnsupportedOperationException("Find spend by Id and Username is not supported with API");
-//    }
-//
-//    @Override
-//    public void deleteSpend(SpendJson spend) {
-//        List<String> ids = List.of(spend.id().toString());
-//        Response<Void> response;
-//        try {
-//            response = spendApi.removeSpend(spend.username(), ids).execute();
-//            if (!response.isSuccessful()) {
-//                throw new IOException("Error deleting spend: " + response.errorBody().string());
-//            }
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
 
     @Nonnull
     public List<SpendJson> allSpends(String username,
@@ -120,33 +69,7 @@ public class SpendApiClient implements SpendClient {
             throw new AssertionError(e);
         }
         return Objects.requireNonNull(response.body());
-
     }
-
-//    @Override
-//    public @Nullable CategoryJson updateCategory(CategoryJson category) {
-//        final Response<CategoryJson> response;
-//        try {
-//            response = spendApi.updateCategory(category)
-//                    .execute();
-//        } catch (IOException e) {
-//            throw new AssertionError(e);
-//        }
-//        if (response.isSuccessful()) {
-//            return response.body();
-//        }
-//        return null;
-//    }
-//
-//    @Override
-//    public Optional<CategoryJson> findCategoryById(UUID id) {
-//        throw new UnsupportedOperationException("Find category by Id is not supported with API");
-//    }
-//
-//    @Override
-//    public Optional<CategoryJson> findCategoryByUsernameAndCategoryName(String username, String name) {
-//        throw new UnsupportedOperationException("Find category by Username and Category name is not supported with API");
-//    }
 
     @Override
     public void deleteCategory(@Nonnull CategoryJson category) {
