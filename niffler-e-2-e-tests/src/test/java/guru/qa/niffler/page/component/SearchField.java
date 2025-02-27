@@ -2,7 +2,6 @@ package guru.qa.niffler.page.component;
 
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
-import org.openqa.selenium.Keys;
 
 import static com.codeborne.selenide.Selenide.$;
 
@@ -12,7 +11,7 @@ public class SearchField {
     @Step("Осуществить поиск")
     public SearchField search(String query) {
         searchInput.setValue(query);
-        searchInput.sendKeys(Keys.ENTER);
+        searchInput.pressEnter();
         return this;
     }
 
