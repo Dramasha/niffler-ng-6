@@ -1,12 +1,11 @@
 package guru.qa.niffler.page;
 
 import com.codeborne.selenide.SelenideElement;
-import guru.qa.niffler.test.web.BaseTest;
 import io.qameta.allure.Step;
 
 import static com.codeborne.selenide.Selenide.$;
 
-public class EditSpendingPage extends BaseTest {
+public class EditSpendingPage extends BasePage {
     private final SelenideElement
             descriptionInput = $("#description"),
             categoryInput = $("#category"),

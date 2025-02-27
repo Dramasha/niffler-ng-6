@@ -4,7 +4,6 @@ import guru.qa.niffler.api.AuthApi;
 import guru.qa.niffler.api.UserApi;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.model.UserJson;
-import guru.qa.niffler.service.UsersClient;
 import okhttp3.Cookie;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -19,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class UserApiClient implements UsersClient, okhttp3.CookieJar {
+public class UserApiClient implements okhttp3.CookieJar {
 
     private final UserApi userApi;
     private final AuthApi authApi;
@@ -45,7 +44,6 @@ public class UserApiClient implements UsersClient, okhttp3.CookieJar {
         this.authApi = authUserData.create(AuthApi.class);
     }
 
-    @Override
     public @Nonnull UserJson registerUser(@Nonnull String username, @Nonnull String password) throws IOException {
         Response<Void> formResponse;
         try {
@@ -74,8 +72,7 @@ public class UserApiClient implements UsersClient, okhttp3.CookieJar {
         throw new IOException("Failed create user: " + formResponse.body());
     }
 
-    @Override
-    public @Nonnull UserJson getCurrentUser(@Nonnull String username) throws IOException {
+    public @Nonnull UserJson findByUsername(@Nonnull String username) throws IOException {
         Response<UserJson> formResponse = userApi.getCurrentUser(username)
                 .execute();
         if (formResponse.isSuccessful()) {
@@ -84,7 +81,6 @@ public class UserApiClient implements UsersClient, okhttp3.CookieJar {
         throw new IOException("Failed to get current user: " + formResponse.body());
     }
 
-    @Override
     public @Nonnull UserJson updateUser(@Nonnull UserJson user) throws IOException {
         Response<UserJson> formResponse = userApi.updateUser(user)
                 .execute();
@@ -94,7 +90,6 @@ public class UserApiClient implements UsersClient, okhttp3.CookieJar {
         throw new IOException("Failed to update user: " + formResponse.body());
     }
 
-    @Override
     public @Nonnull UserJson sendInvitation(@Nonnull String username, @Nonnull String targetUsername) throws IOException {
         Response<UserJson> formResponse = userApi.sendInvitation(username, targetUsername)
                 .execute();
@@ -104,7 +99,6 @@ public class UserApiClient implements UsersClient, okhttp3.CookieJar {
         throw new IOException("Failed to send invitation: " + formResponse.body());
     }
 
-    @Override
     public @Nonnull UserJson acceptInvitation(@Nonnull String username, @Nonnull String targetUsername) throws IOException {
         Response<UserJson> formResponse = userApi.acceptInvitation(username, targetUsername)
                 .execute();
@@ -114,7 +108,6 @@ public class UserApiClient implements UsersClient, okhttp3.CookieJar {
         throw new IOException("Failed to accept invitation: " + formResponse.body());
     }
 
-    @Override
     public @Nonnull UserJson declineInvitation(@Nonnull String username, @Nonnull String targetUsername) throws IOException {
         Response<UserJson> formResponse = userApi.declineInvitation(username, targetUsername)
                 .execute();
@@ -124,7 +117,6 @@ public class UserApiClient implements UsersClient, okhttp3.CookieJar {
         throw new IOException("Failed to decline invitation: " + formResponse.body());
     }
 
-    @Override
     public void removeFriend(@Nonnull String username, @Nonnull String targetUsername) throws IOException {
         Response<Void> formResponse = userApi.removeFriend(username, targetUsername)
                 .execute();

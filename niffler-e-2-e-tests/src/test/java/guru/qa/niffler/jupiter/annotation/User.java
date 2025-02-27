@@ -19,4 +19,10 @@ public @interface User {
     Category[] categories() default {};
 
     Spending[] spendings() default {};
+
+    int incomeInvitations() default 0;
+
+    int outcomeInvitations() default 0;
+
+    int addedFriends() default 0;
 }

@@ -19,7 +19,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+
+import static guru.qa.niffler.utils.RandomDataUtils.getRandomName;
+import static guru.qa.niffler.utils.RandomDataUtils.getRandomPassword;
 
 public class UsersDbClient implements UsersClient {
 
@@ -49,7 +54,7 @@ public class UsersDbClient implements UsersClient {
 
     @Override
     @Step("Поиск пользователя по Логину")
-    public @Nonnull UserJson getCurrentUser(@Nonnull String username) {
+    public @Nonnull UserJson findByUsername(@Nonnull String username) {
         return xaTransactionTemplate.execute(() -> {
             UserEntity userEntity;
             try {
@@ -81,31 +86,66 @@ public class UsersDbClient implements UsersClient {
 
     @Override
     @Step("Отправить запрос в друзья")
-    public @Nonnull UserJson sendInvitation(@Nonnull String username, @Nonnull String targetUsername) {
-        return xaTransactionTemplate.execute(() -> {
-            UserEntity requester;
-            try {
-                requester = userdataUserRepository.findByUsername(username)
-                        .orElseThrow(() -> new IOException("User not found: " + username));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+    public @Nonnull List<UserJson> sendInvitation(@Nonnull String username, @Nonnull String targetUsername, int count) {
+        List<UserJson> invitationsUsers = new ArrayList<>();
+        if (count > 0) {
+            for (int i = 0; i < count; i++) {
+                xaTransactionTemplate.execute(() -> {
+                    UserEntity requester;
+                    try {
+                        requester = userdataUserRepository.findByUsername(username)
+                                .orElseThrow(() -> new IOException("User not found: " + username));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    UserEntity addressee;
+                    try {
+                        addressee = userdataUserRepository.findByUsername(targetUsername)
+                                .orElseThrow(() -> new IOException("Target user not found: " + targetUsername));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    userdataUserRepository.sendInvitation(requester, addressee);
+                    invitationsUsers.add(UserJson.fromEntity(addressee, null));
+                    return null;
+                });
             }
-            UserEntity addressee;
-            try {
-                addressee = userdataUserRepository.findByUsername(targetUsername)
-                        .orElseThrow(() -> new IOException("Target user not found: " + targetUsername));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            userdataUserRepository.sendInvitation(requester, addressee);
-            return UserJson.fromEntity(addressee, null);
-        });
+        }
+        return invitationsUsers;
     }
+
 
     @Override
     @Step("Принять запрос в друзья")
-    public @Nonnull UserJson acceptInvitation(@Nonnull String username, @Nonnull String targetUsername) {
-        throw new UnsupportedOperationException("Accept invitation is not supported now");
+    public @Nonnull List<UserJson> addFriend(@Nonnull String targetUsername, int count) {
+        List<UserJson> invitationsUsers = new ArrayList<>();
+
+        for (int i = 0; i < count; i++) {
+            String usernameFriend = registerUser(getRandomName(), getRandomPassword(3,12)).username();
+            xaTransactionTemplate.execute(() -> {
+                UserEntity target;
+                try {
+                    target = userdataUserRepository.findByUsername(targetUsername)
+                            .orElseThrow(() -> new IOException("User not found: " + targetUsername));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+                UserEntity addressee;
+                try {
+                    addressee = userdataUserRepository.findByUsername(usernameFriend)
+                            .orElseThrow(() -> new IOException("Target user not found: " + usernameFriend));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+                userdataUserRepository.addFriend(target, addressee);
+                return null;
+            });
+        }
+
+        return invitationsUsers;
+
     }
 
     @Override
