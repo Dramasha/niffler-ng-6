@@ -43,7 +43,7 @@ public class FriendsTests {
         mainPage.goToFriendsUser()
                 .checkThatPageLoaded()
                 .checkWhatUserHaveFriends()
-                .checkWhatUserHaveSpecificFriends(user.friends());
+                .searchByUsername(user.friends());
     }
 
     @ExtendWith(UsersQueueExtension.class)

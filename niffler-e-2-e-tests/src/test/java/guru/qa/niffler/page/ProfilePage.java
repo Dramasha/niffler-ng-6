@@ -25,6 +25,7 @@ public class ProfilePage extends BasePage<ProfilePage> {
             categoryNames = $("div.MuiGrid-spacing-xs-2"),
             closeOrArchiveCategoryOrUnarchive = $(".MuiDialogActions-spacing"),
             nameInput = $("#name").as("поле ввода имени пользователя"),
+            checkProfileLoaded = $("#category"),
             submitBtn = $("[type='submit']").as("кнопка сохранения изменений");
 
     @Step("Ввести имя")
@@ -106,6 +107,7 @@ public class ProfilePage extends BasePage<ProfilePage> {
 
     @Override
     public ProfilePage checkThatPageLoaded() {
-        return null;
+        checkProfileLoaded.shouldHave(text("Add new category"));
+        return this;
     }
 }

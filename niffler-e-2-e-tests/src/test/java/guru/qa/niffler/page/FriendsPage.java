@@ -1,18 +1,13 @@
 package guru.qa.niffler.page;
 
-import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
-
-import java.util.Collection;
 
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThan;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
 
 public class FriendsPage extends BasePage<FriendsPage> {
 
@@ -29,7 +24,7 @@ public class FriendsPage extends BasePage<FriendsPage> {
             unfriend = $(byText("Unfriend")).as("кнопка 'Unfriend'"),
             decline = $(byText("Decline")).as("кнопка 'Decline'"),
             friendsTabActive = $(".Mui-selected"),
-            declineBtnInActionMenu = $(".MuiDialogActions-spacing [type='button']:nth-child(2)").as("кнопка 'Decline' в диалоговом окне");
+            declineBtnInActionMenu = $(".MuiDialogActions-root").$(byText("Decline"));
 
 
     @Step("Проверка, что у пользователя нет друзей")
@@ -56,9 +51,9 @@ public class FriendsPage extends BasePage<FriendsPage> {
         return new FriendsPage();
     }
 
-    @Step("Проверка, что у пользователя есть конкретный Друг {usernameFriend}")
-    public void checkWhatUserHaveSpecificFriends(String usernameFriend) {
-        friendsArea.shouldHave(text(usernameFriend));
+    @Step("Проверка, что у пользователя есть конкретный Друг {username}")
+    public void searchByUsername(String username) {
+        friendsArea.shouldHave(text(username));
     }
 
     @Step("Проверка, что у пользователя есть входящий запрос в друзья")
