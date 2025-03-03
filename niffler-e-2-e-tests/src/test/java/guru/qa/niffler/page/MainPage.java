@@ -2,13 +2,15 @@ package guru.qa.niffler.page;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import io.qameta.allure.Step;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 
-public class MainPage {
+public class MainPage extends BasePage<MainPage> {
+
     private final ElementsCollection tableRows = $("#spendings tbody").$$("tr");
 
     private final SelenideElement
@@ -17,36 +19,16 @@ public class MainPage {
             personIcon = $("[data-testid='PersonIcon']"),
             personMenu = $("[role='menu']"),
             imageInput = $(".image__input-label"),
-            searchInput = $("[placeholder='Search']"),
-            clickSearch = $("[data-testid='SearchIcon']"),
-            allArea = $("[aria-labelledby='tableTitle']"),
             peopleTabs = $("[aria-label='People tabs']");
 
-    public void searchSpendsByName(String nameSpending) {
-        searchInput.setValue(nameSpending);
-        searchInput.shouldHave(text(nameSpending));
-        clickSearch.click();
-    }
 
-    public void checkSpendAfterSearch(String name){
-        allArea.shouldHave(text(name));
-    }
-
-    public EditSpendingPage editSpending(String spendingDescription) {
-        tableRows.find(text(spendingDescription)).$$("td").get(5).click();
-
-        return new EditSpendingPage();
-    }
-
-    public void checkThatTableContainsSpending(String spendingDescription) {
-        tableRows.find(text(spendingDescription)).should(visible);
-    }
-
+    @Step("Проверка успешной авторизации")
     public void checkIsLoaded() {
         statisticText.shouldBe(visible).shouldHave(text("Statistics"));
         spendingsText.shouldBe(visible).shouldHave(text("History of Spendings"));
     }
 
+    @Step("Перейти в Профиль")
     public ProfilePage goToProfile() {
         personIcon.click();
         personMenu.shouldBe(visible).$(byText("Profile")).click();
@@ -55,6 +37,7 @@ public class MainPage {
         return new ProfilePage();
     }
 
+    @Step("Перейти в Друзья")
     public FriendsPage goToFriendsUser() {
         personIcon.click();
         personMenu.shouldBe(visible).$(byText("Friends")).click();
@@ -63,10 +46,18 @@ public class MainPage {
         return new FriendsPage();
     }
 
+    @Step("Кликнуть на Выйти")
     public LoginPage clickToSignOut() {
         personIcon.click();
         personMenu.shouldBe(visible).$(byText("Sign out")).click();
 
         return new LoginPage();
+    }
+
+    @Step("Проверка загрузки Домашней страницы")
+    @Override
+    public MainPage checkThatPageLoaded() {
+        spendingsText.shouldBe(visible).shouldHave(text("History of Spendings"));
+        return this;
     }
 }

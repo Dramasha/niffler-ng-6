@@ -13,12 +13,18 @@ import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.UsersClient;
+import io.qameta.allure.Step;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static guru.qa.niffler.utils.RandomDataUtils.getRandomName;
+import static guru.qa.niffler.utils.RandomDataUtils.getRandomPassword;
 
 public class UsersDbClient implements UsersClient {
 
@@ -34,7 +40,8 @@ public class UsersDbClient implements UsersClient {
     );
 
     @Override
-    public UserJson registerUser(String username, String password) {
+    @Step("Регистрация нового пользователя")
+    public @Nonnull UserJson registerUser(@Nonnull String username, @Nonnull String password) {
         return xaTransactionTemplate.execute(() -> {
             AuthUserEntity authUser = authUserEntity(username, password);
             authUserRepository.create(authUser);
@@ -46,7 +53,8 @@ public class UsersDbClient implements UsersClient {
     }
 
     @Override
-    public UserJson getCurrentUser(String username)  {
+    @Step("Поиск пользователя по Логину")
+    public @Nonnull UserJson findByUsername(@Nonnull String username) {
         return xaTransactionTemplate.execute(() -> {
             UserEntity userEntity;
             try {
@@ -60,7 +68,8 @@ public class UsersDbClient implements UsersClient {
     }
 
     @Override
-    public UserJson updateUser(UserJson user) {
+    @Step("Обновление пользователя")
+    public @Nonnull UserJson updateUser(@Nonnull UserJson user) {
         return xaTransactionTemplate.execute(() -> {
             UserEntity userEntity;
             try {
@@ -76,56 +85,79 @@ public class UsersDbClient implements UsersClient {
     }
 
     @Override
-    public List<UserJson> getAllUsers(String username, String searchQuery) throws IOException {
-        throw new UnsupportedOperationException("Get all users is not supported now");
-    }
-
-    @Override
-    public List<UserJson> getFriends(String username, String searchQuery) throws IOException {
-        throw new UnsupportedOperationException("Get friends is not supported now");
-    }
-
-    @Override
-    public UserJson sendInvitation(String username, String targetUsername) throws IOException {
-        return xaTransactionTemplate.execute(() -> {
-            UserEntity requester;
-            try {
-                requester = userdataUserRepository.findByUsername(username)
-                        .orElseThrow(() -> new IOException("User not found: " + username));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+    @Step("Отправить запрос в друзья")
+    public @Nonnull List<UserJson> sendInvitation(@Nonnull String username, @Nonnull String targetUsername, int count) {
+        List<UserJson> invitationsUsers = new ArrayList<>();
+        if (count > 0) {
+            for (int i = 0; i < count; i++) {
+                xaTransactionTemplate.execute(() -> {
+                    UserEntity requester;
+                    try {
+                        requester = userdataUserRepository.findByUsername(username)
+                                .orElseThrow(() -> new IOException("User not found: " + username));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    UserEntity addressee;
+                    try {
+                        addressee = userdataUserRepository.findByUsername(targetUsername)
+                                .orElseThrow(() -> new IOException("Target user not found: " + targetUsername));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    userdataUserRepository.sendInvitation(requester, addressee);
+                    invitationsUsers.add(UserJson.fromEntity(addressee, null));
+                    return null;
+                });
             }
-            UserEntity addressee;
-            try {
-                addressee = userdataUserRepository.findByUsername(targetUsername)
-                        .orElseThrow(() -> new IOException("Target user not found: " + targetUsername));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            userdataUserRepository.sendInvitation(requester, addressee);
-            return UserJson.fromEntity(addressee, null);
-        });
+        }
+        return invitationsUsers;
+    }
+
+
+    @Override
+    @Step("Принять запрос в друзья")
+    public @Nonnull List<UserJson> addFriend(@Nonnull String targetUsername, int count) {
+        List<UserJson> invitationsUsers = new ArrayList<>();
+
+        for (int i = 0; i < count; i++) {
+            String usernameFriend = registerUser(getRandomName(), getRandomPassword(3,12)).username();
+            xaTransactionTemplate.execute(() -> {
+                UserEntity target;
+                try {
+                    target = userdataUserRepository.findByUsername(targetUsername)
+                            .orElseThrow(() -> new IOException("User not found: " + targetUsername));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+                UserEntity addressee;
+                try {
+                    addressee = userdataUserRepository.findByUsername(usernameFriend)
+                            .orElseThrow(() -> new IOException("Target user not found: " + usernameFriend));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+                userdataUserRepository.addFriend(target, addressee);
+                return null;
+            });
+        }
+
+        return invitationsUsers;
+
     }
 
     @Override
-    public UserJson acceptInvitation(String username, String targetUsername) throws IOException {
-        throw new UnsupportedOperationException("Accept invitation is not supported now");
-    }
-
-    @Override
-    public UserJson declineInvitation(String username, String targetUsername) throws IOException {
+    @Step("Отклонить запрос в друзья")
+    public @Nonnull UserJson declineInvitation(@Nonnull String username, @Nonnull String targetUsername) {
         throw new UnsupportedOperationException("Decline invitation is not supported now");
     }
 
     @Override
-    public void removeFriend(String username, String targetUsername) throws IOException {
+    @Step("Удалить пользователя из друзей")
+    public void removeFriend(@Nonnull String username, @Nonnull String targetUsername) {
         throw new UnsupportedOperationException("Remove friend is not supported now");
-    }
-
-    private UserEntity createNewUser(String username, String password) {
-        AuthUserEntity authUser = authUserEntity(username, password);
-        authUserRepository.create(authUser);
-        return userdataUserRepository.create(userEntity(username));
     }
 
     private UserEntity userEntity(String username) {

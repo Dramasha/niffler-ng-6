@@ -67,9 +67,9 @@ public class CategoryExtension implements BeforeEachCallback, AfterTestExecution
                 ? userJson.testData().categories()
                 : context.getStore(NAMESPACE).get(context.getUniqueId(), List.class);
 
-        for (CategoryJson categoryJson : categories) {
-            spendClient.deleteCategory(categoryJson);
-        }
+//        for (CategoryJson categoryJson : categories) {
+//            spendClient.deleteCategory(categoryJson);
+//        }
     }
 
     @Override

@@ -2,25 +2,28 @@ package guru.qa.niffler.service;
 
 import guru.qa.niffler.model.UserJson;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.List;
 
 public interface UsersClient {
-    UserJson registerUser(String username, String password) throws IOException;
+    @Nonnull
+    UserJson registerUser(@Nonnull String username, @Nonnull String password) throws IOException;
 
-    UserJson getCurrentUser(String username) throws IOException;
+    @Nonnull
+    UserJson findByUsername(@Nonnull String username) ;
 
-    UserJson updateUser(UserJson user) throws IOException;
+    @Nonnull
+    UserJson updateUser(@Nonnull UserJson user) throws IOException;
 
-    List<UserJson> getAllUsers(String username, String searchQuery) throws IOException;
+    @Nonnull
+    List<UserJson> sendInvitation(@Nonnull String username, @Nonnull String targetUsername, int count);
 
-    List<UserJson> getFriends(String username, String searchQuery) throws IOException;
+    @Nonnull
+    List<UserJson> addFriend(@Nonnull String targetUsername, int count);
 
-    UserJson sendInvitation(String username, String targetUsername) throws IOException;
+    @Nonnull
+    UserJson declineInvitation(@Nonnull String username, @Nonnull String targetUsername) throws IOException;
 
-    UserJson acceptInvitation(String username, String targetUsername) throws IOException;
-
-    UserJson declineInvitation(String username, String targetUsername) throws IOException;
-
-    void removeFriend(String username, String targetUsername) throws IOException;
+    void removeFriend(@Nonnull String username, @Nonnull String targetUsername) throws IOException;
 }
